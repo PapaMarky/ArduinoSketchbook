@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module fritzingVersion="0.7.0b.02.01.5801" icon="Mine.png">
+    <title>My Parts</title>
+    <instances>
+        <instance moduleIdRef="generic_ic_dip_8_300mil" modelIndex="2402" path="C:/fritzing.2012.02.03.pc/parts/core/generic_ic_dip_8_300mil.fzp">
+            <property name="chip label" value="IC"/>
+            <property name="spacing" value="300mil"/>
+            <views>
+                <iconView layer="silkscreenLabel">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+                <iconView layer="groundplane1">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+            </views>
+        </instance>
+        <instance moduleIdRef="SmallElectrolyticCapacitorModuleID" modelIndex="2405" path="C:/fritzing.2012.02.03.pc/parts/core/capacitor_electrolytic_small.fzp">
+            <property name="capacitance" value="1µF"/>
+            <views>
+                <iconView layer="breadboard">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+                <iconView layer="breadboard">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+            </views>
+        </instance>
+        <instance moduleIdRef="100milCeramicCapacitorModuleID" modelIndex="2408" path="C:/fritzing.2012.02.03.pc/parts/core/capacitor_ceramic_100mil.fzp">
+            <property name="capacitance" value="100nF"/>
+            <views>
+                <iconView layer="breadboard">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+                <iconView layer="breadboard">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+            </views>
+        </instance>
+    </instances>
+</module>
