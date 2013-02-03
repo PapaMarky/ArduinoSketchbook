@@ -1,0 +1,44 @@
+TODO:
+- RGB LED
+  - swap resistors
+  - wire up
+  - code up
+    * Pulse mode
+
+- Thermistor
+  - make class
+
+- Make hole in bottle for fan
+- Make hole in bottle lid
+
+- cut board for booze sensor
+- build booze sensor
+- build LED board
+
+- finalize fan connection plan
+
+- plan bottle
+  - frame
+  - hose hookup (spit valve?)
+
+- plan bottom board
+- plan box
+
+
+------------------------------------
+
+Pirrahna resistors
+
+R - 150ohm 1/8 W
+G - 100ohm 1/8 w
+B - 100ohm 1/8 w (2)
+Cathode: (1)
+
+
+BIG Led resistors
+
+R 150
+G 100
+B 100
+
+
