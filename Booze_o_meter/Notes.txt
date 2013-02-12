@@ -24,7 +24,6 @@ TODO:
 - plan bottom board
 - plan box
 
-
 ------------------------------------
 
 Pirrahna resistors
