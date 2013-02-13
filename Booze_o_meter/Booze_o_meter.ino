@@ -1,3 +1,5 @@
+// Copyright (c) 2013 Mark Dyer. All rights reserved.
+
 #include <SoftwareSerial.h>
 #include <Booze_O_Meter.h>
 /**
@@ -20,14 +22,14 @@
   * - D13 : 
   *
   * - A1  :
-  * - A2  : SENSOR_DATA_PIN
-  * - A3  : SENSOR_TEMPERATURE_PIN
-  * - A4  : 
-  * - A5  : 
+  * - A2  : 
+  * - A3  : 
+  * - A4  : SENSOR_TEMPERATURE_PIN
+  * - A5  : SENSOR_DATA_PIN
   */
 
 const int JUMPER_PIN      = 8;
-const int FAN_PIN         = 10;
+const int FAN_PIN         = 13;
 
 const int DISPLAY_RX_PIN  = 5; // don't need to wire this
 const int DISPLAY_TX_PIN  = 6; // connect to RX on seven segment display
@@ -37,8 +39,12 @@ const int UP_BUTTON_PIN   = 3;
 const int DOWN_BUTTON_PIN = 4;
 
 const int SENSOR_CONTROL_PIN = 7;
-const int SENSOR_DATA_PIN = A0;
-const int SENSOR_TEMPERATURE_PIN = A1;
+const int SENSOR_DATA_PIN = A5;
+const int SENSOR_TEMPERATURE_PIN = A4;
+
+const int RED_PIN = 11;
+const int GREEN_PIN = 10;
+const int BLUE_PIN = 9;
 
 Booze_O_Meter bom(DISPLAY_RX_PIN, DISPLAY_TX_PIN);
 
@@ -49,6 +55,7 @@ void setup() {
   bom.set_main_button_pin(MAIN_BUTTON_PIN);
   bom.set_up_down_button_pins(UP_BUTTON_PIN, DOWN_BUTTON_PIN);
   bom.set_booze_sensor_pins(SENSOR_CONTROL_PIN, SENSOR_DATA_PIN, SENSOR_TEMPERATURE_PIN);
+  bom.set_rgb_led_pins(RED_PIN, GREEN_PIN, BLUE_PIN);
   
   bom.setup();
   bom.loop(); // run the POWER_ON state's loop
