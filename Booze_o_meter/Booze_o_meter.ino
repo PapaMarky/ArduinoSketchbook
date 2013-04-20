@@ -2,6 +2,8 @@
 
 #include <SoftwareSerial.h>
 #include <Booze_O_Meter.h>
+#include <StateContext.h>
+
 /**
   * ARDUINO PIN USAGE
   * (Note: pins 2 & 3 can be used for external interrupts)
@@ -16,14 +18,14 @@
   * - D7  : SENSOR_CONTROL_PIN // sensor on/off control
   * - D8  : JUMPER_PIN // standalone mode
   * + D9  :
-  * + D10 : FAN_PIN // fan on/off control //XXX MOVE FAN TO D12
+  * + D10 : 
   * + D11 :
   * - D12 : 
-  * - D13 : 
+  * - D13 : FAN_PIN // fan on/off control //XXX MOVE FAN TO D12
   *
   * - A1  :
   * - A2  : 
-  * - A3  : 
+  * - A3  : xxx
   * - A4  : SENSOR_TEMPERATURE_PIN
   * - A5  : SENSOR_DATA_PIN
   */
@@ -46,16 +48,29 @@ const int RED_PIN = 11;
 const int GREEN_PIN = 10;
 const int BLUE_PIN = 9;
 
-Booze_O_Meter bom(DISPLAY_RX_PIN, DISPLAY_TX_PIN);
+mdlib::DigitalOutput fan;
+SoftwareSerial display(DISPLAY_RX_PIN, DISPLAY_TX_PIN);
+mdlib::MultiColorLED rgb_led;
+BOM::BoozeSensor sensor;
+
+BOM::StateContext context;
+BOM::Booze_O_Meter bom;
 
 void setup() {
   Serial.begin(9600);
   
-  bom.set_fan_pin(FAN_PIN);
+  fan.set_pin(FAN_PIN);
+  rgb_led.set_pins(RED_PIN, GREEN_PIN, BLUE_PIN);
+  sensor.set_pins(SENSOR_CONTROL_PIN, SENSOR_DATA_PIN, SENSOR_TEMPERATURE_PIN);
+  
+  context.set_fan(&fan);
+  context.set_display(&display);
+  context.set_rgb_led(&rgb_led);
+  
+  bom.set_context(&context);
+  
   bom.set_main_button_pin(MAIN_BUTTON_PIN);
   bom.set_up_down_button_pins(UP_BUTTON_PIN, DOWN_BUTTON_PIN);
-  bom.set_booze_sensor_pins(SENSOR_CONTROL_PIN, SENSOR_DATA_PIN, SENSOR_TEMPERATURE_PIN);
-  bom.set_rgb_led_pins(RED_PIN, GREEN_PIN, BLUE_PIN);
   
   bom.setup();
   bom.loop(); // run the POWER_ON state's loop
@@ -67,4 +82,5 @@ void setup() {
 void loop() {
   bom.loop();
 }
+
 
