@@ -1,0 +1,78 @@
+START_UP
+* turn on sensor
+* FAN: on
+* LED: rotate colors
+* LED BUTTON: off
+* DISPLAY: blinky lights
+> timeout(TBD): WARM_UP
+
+WARM_UP
+* turn on sensor
+* FAN: off
+* wait for sensor & temp to stabilize
+* LED: heartbeat (pulsing blue)
+* LED BUTTON: off
+* DISPLAY: ?? (off? temp? delta?)
+# set low bounds for sensor (calibration)
+> event(sensor & temp stable): READY
+
+READY
+* LED: blink green (long off, quick on)
+* LED BUTTON: solid green
+* DISPLAY: off
+* FAN: off
+> event(button click): SAMPLING
+> event(sudden sensor change): SAMPLING
+> timeout(TBD): READY2
+
+READY2
+* LED: blink green (longer off, quick on)
+* LED BUTTON: solid green but dim
+* DISPLAY: off
+* FAN: off
+> event(button click): SAMPLING
+> event(sudden sensor change): SAMPLING
+> timeout(TBD): POWERSAVER
+
+SAMPLING
+* read sensor, store max
+* DISPLAY: stored reading as percent
+* LED: green --> yellow --> red
+  indicating stored value
+* FAN: off
+> event(button click): POST_SAMPLE_VENTING
+> event(sensor value falls TBD): POST_SAMPLE_VENTING
+> timeout(TBD): POST_SAMPLE
+
+POST_SAMPLE_VENTING
+* FAN: on
+* LED: green --> yellow --> red of sample
+* DISPLAY: % of sample
+* LED BUTTON: off
+> timeout(TBD): stop fan: POST_SAMPLE_DISPLAY
+> event(button click): POST_SAMPLE_DISPLAY
+
+POST_SAMPLE_DISPLAY
+* FAN: off
+* LED BUTTON: on
+* LED: green --> yellow --> red of sample
+* DISPLAY: % of sample
+> timeout(TBD): WARM_UP
+> event(button click) : WARM_UP
+
+POWER_SAVER
+* FAN: off
+* LED BUTTON: slow blink, dim
+* LED: off
+* DISPLAY: off (?)
+> timer(TBD) : OFF
+> event(button click) : WARM_UP
+
+OFF
+* enter narcoleptic mode (loop every TBD)
+* FAN: off
+* LED BUTTON: off
+* LED: off
+* DISPLAY: off
+> event(button click) : WARM_UP
+
