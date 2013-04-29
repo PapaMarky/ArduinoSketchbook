@@ -55,6 +55,7 @@ BOM::BoozeSensor sensor;
 
 BOM::StateContext context;
 BOM::Booze_O_Meter bom;
+mdlib::Button main_button;
 
 void setup() {
   Serial.begin(9600);
@@ -67,12 +68,23 @@ void setup() {
   context.set_display(&display);
   context.set_rgb_led(&rgb_led);
   
+  main_button.set_pin(MAIN_BUTTON_PIN);
   bom.set_context(&context);
   
-  bom.set_main_button_pin(MAIN_BUTTON_PIN);
   bom.set_up_down_button_pins(UP_BUTTON_PIN, DOWN_BUTTON_PIN);
   
   bom.setup();
+  context.fan()->setup();
+  context.sensor()->setup();
+  context.display()->begin(9600);
+  delay(10);
+  context.display()->write('v'); // 0x76); // clear
+  context.display()->write('w');
+  context.display()->write((uint8_t)0x00);
+
+  context.led()->setup();
+  context.led()->set_color(mdlib::BLACK);
+ 
   bom.loop(); // run the POWER_ON state's loop
   
   Serial.print("Standalone: ");
