@@ -1,8 +1,12 @@
+#include <Narcoleptic.h>
+
 // Copyright (c) 2013 Mark Dyer. All rights reserved.
 
 #include <SoftwareSerial.h>
+#include <SevenSegmentDisplay.h>
 #include <Booze_O_Meter.h>
 #include <StateContext.h>
+#include <LightedButton.h>
 
 /**
   * ARDUINO PIN USAGE
@@ -30,69 +34,53 @@
   * - A5  : SENSOR_DATA_PIN
   */
 
-const int JUMPER_PIN      = 8;
-const int FAN_PIN         = 13;
+const int JUMPER_PIN      = 2;
+const int FAN_PIN         = A5;
 
-const int DISPLAY_RX_PIN  = 5; // don't need to wire this
-const int DISPLAY_TX_PIN  = 6; // connect to RX on seven segment display
+const int DISPLAY_RX_PIN  = 2; // don't need to wire this
+const int DISPLAY_TX_PIN  = 3; // connect to RX on seven segment display
 
-const int MAIN_BUTTON_PIN = 2;
-const int UP_BUTTON_PIN   = 3;
-const int DOWN_BUTTON_PIN = 4;
+const int MAIN_BUTTON_PIN     = 8;
+const int MAIN_BUTTON_LED_PIN = 6;
 
-const int SENSOR_CONTROL_PIN = 7;
-const int SENSOR_DATA_PIN = A5;
-const int SENSOR_TEMPERATURE_PIN = A4;
+const int SENSOR_CONTROL_PIN = 12;
+const int SENSOR_DATA_PIN = A1;
+const int SENSOR_TEMPERATURE_PIN = A2;
 
 const int RED_PIN = 11;
 const int GREEN_PIN = 10;
 const int BLUE_PIN = 9;
 
 mdlib::DigitalOutput fan;
-SoftwareSerial display(DISPLAY_RX_PIN, DISPLAY_TX_PIN);
+mdlib::SevenSegmentDisplay display(DISPLAY_RX_PIN, DISPLAY_TX_PIN);
 mdlib::MultiColorLED rgb_led;
 BOM::BoozeSensor sensor;
 
 BOM::StateContext context;
 BOM::Booze_O_Meter bom;
-mdlib::Button main_button;
+mdlib::LightedButton main_button;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   fan.set_pin(FAN_PIN);
   rgb_led.set_pins(RED_PIN, GREEN_PIN, BLUE_PIN);
   sensor.set_pins(SENSOR_CONTROL_PIN, SENSOR_DATA_PIN, SENSOR_TEMPERATURE_PIN);
+  main_button.set_pins(MAIN_BUTTON_PIN, MAIN_BUTTON_LED_PIN);
   
-  context.set_fan(&fan);
   context.set_display(&display);
+  context.set_fan(&fan);
   context.set_rgb_led(&rgb_led);
+  context.set_sensor(&sensor);
+  context.set_button(&main_button);
   
-  main_button.set_pin(MAIN_BUTTON_PIN);
   bom.set_context(&context);
-  
-  bom.set_up_down_button_pins(UP_BUTTON_PIN, DOWN_BUTTON_PIN);
-  
-  bom.setup();
-  context.fan()->setup();
-  context.sensor()->setup();
-  context.display()->begin(9600);
-  delay(10);
-  context.display()->write('v'); // 0x76); // clear
-  context.display()->write('w');
-  context.display()->write((uint8_t)0x00);
 
-  context.led()->setup();
-  context.led()->set_color(mdlib::BLACK);
- 
-  bom.loop(); // run the POWER_ON state's loop
-  
-  Serial.print("Standalone: ");
-  Serial.println(bom.isStandalone() ? "TRUE" : "FALSE");
+  bom.setup();
 }
 
 void loop() {
-  bom.loop();
+  bom.update();
 }
 
 
