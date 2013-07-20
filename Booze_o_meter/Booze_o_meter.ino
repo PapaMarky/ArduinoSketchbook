@@ -62,7 +62,7 @@ mdlib::LightedButton main_button;
 
 void setup() {
   Serial.begin(115200);
-  
+  randomSeed(analogRead(0));
   fan.set_pin(FAN_PIN);
   rgb_led.set_pins(RED_PIN, GREEN_PIN, BLUE_PIN);
   sensor.set_pins(SENSOR_CONTROL_PIN, SENSOR_DATA_PIN, SENSOR_TEMPERATURE_PIN);
