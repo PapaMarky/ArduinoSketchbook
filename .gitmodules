@@ -1,0 +1,3 @@
+[submodule "libraries"]
+	path = libraries
+	url = ../ArduinoLibs.git

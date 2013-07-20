@@ -44,7 +44,7 @@ SAMPLING
 > event(sensor value falls TBD): POST_SAMPLE_VENTING
 > timeout(TBD): POST_SAMPLE
 
-POST_SAMPLE_VENTING
+POST_SAMPLE_VENTING (PostSampleState)
 * FAN: on
 * LED: green --> yellow --> red of sample
 * DISPLAY: % of sample
@@ -52,7 +52,7 @@ POST_SAMPLE_VENTING
 > timeout(TBD): stop fan: POST_SAMPLE_DISPLAY
 > event(button click): POST_SAMPLE_DISPLAY
 
-POST_SAMPLE_DISPLAY
+POST_SAMPLE_DISPLAY (PostSampleState2)
 * FAN: off
 * LED BUTTON: on
 * LED: green --> yellow --> red of sample
