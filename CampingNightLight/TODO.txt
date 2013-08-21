@@ -1,0 +1,9 @@
+- switch vreg package
+- add (and prototype) low-battery LED
+  - voltage splitter (Analog in)
+  - LED (digital out)
+
+- wire up photo-cell
+
+- look at POT design
+  - might replace with touch switch
