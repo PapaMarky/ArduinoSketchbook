@@ -2,6 +2,8 @@
 #ifndef STATE_CONTEXT_
 #define STATE_CONTEXT_
 
+#include "../mdlib/StateMachine.h"
+
 class SoftwareSerial;
 namespace mdlib {
   class DigitalOutput;
@@ -14,7 +16,7 @@ namespace BOM {
 
 class BoozeSensor;
 
-class StateContext {
+class StateContext : public mdlib::StateContext {
  public:
   StateContext() {}
 
@@ -33,6 +35,7 @@ class StateContext {
   void setup();
   void update();
 
+  static StateContext* Get() { return reinterpret_cast<StateContext*>(mdlib::State::s_context); }
  private:
   // context items (things the states need to manipulate)
   // buttons do not belong here, because they generate events

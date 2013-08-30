@@ -1,6 +1,7 @@
 // Copyright (c) 2013 Mark Dyer. All rights reserved.
 #include "Booze_O_Meter.h"
 #include "StateMachine.h"
+#include "StateContext.h"
 #include "EventQueue.h"
 ////////////////////////////////////////////////////////////
 // BoozeSensor
@@ -58,7 +59,7 @@ void Booze_O_Meter::setup() {
   
 void Booze_O_Meter::set_context(StateContext* context) {
   context_ = context;
-  State::set_context(context);
+  mdlib::State::set_context(context);
 }
 
 void Booze_O_Meter::update() {
@@ -69,12 +70,12 @@ void Booze_O_Meter::update() {
     //Serial.println("HANDLING EVENT");
     mdlib::Event e = mdlib::HandleEvent();
 
-    State* next_state = state_->handle_event(e);
+    mdlib::State* next_state = state_->handle_event(e);
     if (next_state)
       set_state(next_state);
   }
 
-  State* next_state = state_->loop();
+  mdlib::State* next_state = state_->loop();
   if (next_state)
     set_state(next_state);
 }

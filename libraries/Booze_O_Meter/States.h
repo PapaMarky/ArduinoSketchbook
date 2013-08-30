@@ -1,46 +1,20 @@
 // Copyright (c) 2013 Mark Dyer. All rights reserved.
-#ifndef STATE_MACHINE_H__
-#define STATE_MACHINE_H__
+#ifndef BOM_STATE_MACHINE_H__
+#define BOM_STATE_MACHINE_H__
+
+#include "../mdLib/StateMachine.h"
 
 #include "EventQueue.h"
 #include "Timers.h"
 
 namespace BOM {
-class StateContext;
 
-class State {
- public:
-  State() {};
-  virtual ~State() {}
-
-  static void set_context(StateContext* context) { s_context = context; }
-
-  virtual void enter_state();
-  virtual void leave_state() {};
-
-  virtual State* loop() = 0;
-  virtual State* handle_event(mdlib::Event e) = 0;
-
-  void set_next_state(State* next_state) {next_state_ = next_state;}
-  void set_timeout_next_state(State* timeout_next_state) {timeout_next_state_ = timeout_next_state;}
-
-  virtual const char* name() const = 0;
-
- protected:
-  static StateContext* s_context;
-  unsigned long start_time_;
-  State* next_state_;
-  State* timeout_next_state_;
-
-  void SetStartTime() { start_time_ = millis(); }
-};
-
-class TimedState : public State {
+class TimedState : public mdlib::State {
  public:
  TimedState() : timeout_(5*60*1000) {}
   virtual ~TimedState() {}
 
-  virtual void enter_state() { State::enter_state(); StartTimer(); }
+  virtual void enter_state() { mdlib::State::enter_state(); StartTimer(); }
   virtual void leave_state() { StopTimer(); }
 
  protected:
@@ -55,16 +29,16 @@ class TimedState : public State {
  private:
   unsigned long timeout_;
 };
- 
-class StartUpState : public State {
+
+class StartUpState : public mdlib::State {
  public:
   StartUpState() {}
 
   virtual void enter_state();
   virtual void leave_state();
 
-  virtual State* loop();
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop();
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual ~StartUpState() {}
 
@@ -83,7 +57,7 @@ class StartUpState : public State {
   bool TryToSetSegment(int n);
 };
 
-class WarmUpState : public State {
+class WarmUpState : public mdlib::State {
  public:
  WarmUpState() : display_mode_(GRAPHIC) {}
   ~WarmUpState() {}
@@ -91,8 +65,8 @@ class WarmUpState : public State {
   virtual void enter_state();
   virtual void leave_state();
 
-  virtual State* loop();
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop();
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual const char* name() const { return "WarmUpState"; }
 
@@ -130,8 +104,8 @@ class ReadyState : public TimedState {
   virtual void enter_state();
   virtual void leave_state();
 
-  virtual State* loop();
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop();
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual const char* name() const { return "ReadyState"; }
  private:
@@ -149,8 +123,8 @@ class SamplingState : public TimedState {
   virtual void enter_state();
   virtual void leave_state();
 
-  virtual State* loop();
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop();
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual const char* name() const { return "SamplingState"; }
  private:
@@ -166,8 +140,8 @@ class PostSampleState : public TimedState {
   virtual void enter_state();
   virtual void leave_state();
 
-  virtual State* loop();
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop();
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual const char* name() const { return "PostSampleState"; }
  private:
@@ -181,22 +155,22 @@ class PostSample2State : public TimedState {
   virtual void enter_state();
   virtual void leave_state();
 
-  virtual State* loop() { return 0;}
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop() { return 0;}
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual const char* name() const { return "PostSampleState 2"; }
  private:
 };
 
-class SleepState : public State {
+class SleepState : public mdlib::State {
  public:
   SleepState() {}
   ~SleepState() {}
 
   virtual void enter_state();
 
-  virtual State* loop();
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop();
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual const char* name() const { return "SleepState"; }
  private:
@@ -210,12 +184,12 @@ class PowerSaverState : public TimedState {
   virtual void enter_state();
   virtual void leave_state();
   
-  virtual State* loop();
-  virtual State* handle_event(mdlib::Event e);
+  virtual mdlib::State* loop();
+  virtual mdlib::State* handle_event(mdlib::Event e);
 
   virtual const char* name() const { return "PowerSaverState"; }
  private:
 };
 }
 
-#endif // STATE_MACHINE_H__
+#endif // BOM_STATE_MACHINE_H__

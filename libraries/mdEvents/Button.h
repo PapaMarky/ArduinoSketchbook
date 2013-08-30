@@ -2,7 +2,7 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "../base/base.h"
+#include "mdBase.h"
 
 namespace mdlib {
 

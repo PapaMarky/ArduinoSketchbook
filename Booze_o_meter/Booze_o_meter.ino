@@ -1,3 +1,18 @@
+#include <SlidingDataWindow.h>
+
+#include <Button.h>
+#include <StateMachine.h>
+#include <LightedButton.h>
+#include <mdBase.h>
+#include <MultiColorLED.h>
+#include <Queue.h>
+#include <SevenSegmentDisplay.h>
+
+#include <BoozeSensor.h>
+#include <Booze_O_Meter.h>
+#include <StateContext.h>
+#include <States.h>
+
 #include <Narcoleptic.h>
 
 // Copyright (c) 2013 Mark Dyer. All rights reserved.

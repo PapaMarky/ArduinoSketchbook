@@ -2,7 +2,7 @@
 #ifndef LIGHTED_BUTTON_H
 #define LIGHTED_BUTTON_H
 
-#include "../base/base.h"
+#include "mdBase.h"
 #include "Button.h"
 
 namespace mdlib {

@@ -1,7 +1,7 @@
 // Copyright (c) 2013 Mark Dyer. All rights reserved.
 #include "StateContext.h"
 
-#include "../base/base.h"
+#include "../mdlib/mdBase.h"
 #include "MultiColorLED.h"
 #include "SevenSegmentDisplay.h"
 #include "BoozeSensor.h"

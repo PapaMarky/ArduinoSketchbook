@@ -1,7 +1,7 @@
 #ifndef MULTI_COLOR_LED_H
 #define MULTI_COLOR_LED_H
 
-#include "../base/base.h"
+#include "mdBase.h"
 
 namespace mdlib {
 
