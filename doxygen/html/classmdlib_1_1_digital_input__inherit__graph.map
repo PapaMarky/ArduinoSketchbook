@@ -1,0 +1,5 @@
+<map id="mdlib::DigitalInput" name="mdlib::DigitalInput">
+<area shape="rect" id="node3" href="$classmdlib_1_1_button.html" title="mdlib::Button" alt="" coords="5,155,104,181"/>
+<area shape="rect" id="node4" href="$classmdlib_1_1_momentary_button.html" title="mdlib::MomentaryButton" alt="" coords="129,155,292,181"/>
+<area shape="rect" id="node2" href="$classmdlib_1_1_base_i_o.html" title="mdlib::BaseIO" alt="" coords="80,5,184,32"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="mdlib::BaseIO" name="mdlib::BaseIO">
+<area shape="rect" id="node2" href="$classmdlib_1_1_analog_input.html" title="mdlib::AnalogInput" alt="" coords="5,80,133,107"/>
+<area shape="rect" id="node3" href="$classmdlib_1_1_analog_output.html" title="mdlib::AnalogOutput" alt="" coords="158,80,297,107"/>
+<area shape="rect" id="node4" href="$classmdlib_1_1_digital_input.html" title="mdlib::DigitalInput" alt="" coords="323,80,448,107"/>
+<area shape="rect" id="node7" href="$classmdlib_1_1_digital_output.html" title="mdlib::DigitalOutput" alt="" coords="472,80,608,107"/>
+<area shape="rect" id="node5" href="$classmdlib_1_1_button.html" title="mdlib::Button" alt="" coords="257,155,356,181"/>
+<area shape="rect" id="node6" href="$classmdlib_1_1_momentary_button.html" title="mdlib::MomentaryButton" alt="" coords="381,155,544,181"/>
+</map>
