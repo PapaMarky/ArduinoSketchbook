@@ -2,8 +2,8 @@
 #ifndef BOOZE_SENSOR__
 #define BOOZE_SENSOR__
 
-#include "../base/base.h"
-#include "SlidingDataWindow.h"
+#include "../mdLib/mdBase.h"
+#include "../mdData/SlidingDataWindow.h"
 
 namespace BOM {
 class BoozeSensor {

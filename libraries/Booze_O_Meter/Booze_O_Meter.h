@@ -2,15 +2,18 @@
 #ifndef BOOZE_O_METER_H__
 #define BOOZE_O_METER_H__
 
-#include "../base/base.h"
+#include "../mdlib/mdBase.h"
 #include "MultiColorLED.h"
 #include "Button.h"
-#include "StateMachine.h"
-#include "StateContext.h"
+#include "States.h"
+#include "./StateContext.h"
 
 #include "BoozeSensor.h"
 
 #include <SoftwareSerial.h>
+namespace mdlib {
+  class State;
+}
 
 namespace BOM {
 
@@ -57,11 +60,11 @@ class Booze_O_Meter {
   static SleepState SLEEP;
   static PowerSaverState POWER_SAVER;
 
-  StateContext* context_;
+  mdlib::StateContext* context_;
 
   mdlib::DigitalInput i2c_jumper_;
 
-  void set_state(State* state) {
+  void set_state(mdlib::State* state) {
     if (state_) {
       state_->leave_state();
     }
@@ -74,7 +77,7 @@ class Booze_O_Meter {
     Serial.println("\")");
 #endif
   }
-  State* state_;
+  mdlib::State* state_;
   unsigned long state_start_millis_;
 };
 }

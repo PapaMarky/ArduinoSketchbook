@@ -2,26 +2,21 @@
 
 #include <Arduino.h>
 #include <Narcoleptic.h>
-#include "../base/base.h"
+#include "../mdlib/mdBase.h"
 #include "BoozeSensor.h"
 #include "LightedButton.h"
 #include "MultiColorLED.h"
 #include "SevenSegmentDisplay.h"
 #include "StateContext.h"
-#include "StateMachine.h"
+#include "States.h"
 
 namespace mdlib {
   extern const char* event_name(mdlib::Event e);
 }
 
 namespace BOM {
-StateContext* State::s_context = 0;
-
   const float DISPLAY_NORMAL = 1.0;
   const float DISPLAY_DIM = 0.83;
-void State::enter_state() {
-  SetStartTime();
-}
 
 ////////////////////////////////////////////////////////////////////
 //      StartUpState
@@ -30,25 +25,25 @@ void State::enter_state() {
 void StartUpState::enter_state() {
   SetStartTime();
 
-  s_context->led()->set_color(mdlib::WHITE);
-  s_context->fan()->TurnOn();
-  s_context->sensor()->TurnOn();
-  s_context->button()->TurnOn();
-  s_context->display()->Reset();
-  s_context->display()->SetBrightness(DISPLAY_NORMAL);
-  //  s_context->display()->set(8888);
+  StateContext::Get()->led()->set_color(mdlib::WHITE);
+  StateContext::Get()->fan()->TurnOn();
+  StateContext::Get()->sensor()->TurnOn();
+  StateContext::Get()->button()->TurnOn();
+  StateContext::Get()->display()->Reset();
+  StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
+  //  StateContext::Get()->display()->set(8888);
 
   for(int i = 0; i < 5; i++)
     segments[i] = 0x00;
 }
 
 void StartUpState::leave_state() {
-  s_context->led()->set_color(mdlib::BLACK);
-  s_context->fan()->TurnOff();
-  s_context->button()->TurnOff();
+  StateContext::Get()->led()->set_color(mdlib::BLACK);
+  StateContext::Get()->fan()->TurnOff();
+  StateContext::Get()->button()->TurnOff();
 }
 
-State* StartUpState::loop() {
+mdlib::State* StartUpState::loop() {
   unsigned long elapsed = millis() - start_time_;
   static int segments = 0;
   static int gap = 0;
@@ -70,10 +65,10 @@ State* StartUpState::loop() {
       if(found) {
 	segments++;
 	if (segments == 38) {
-	  s_context->display()->SetBrightness(DISPLAY_NORMAL);
+	  StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
 	}
 	else if (segments % 5 == 0) {
-	  s_context->display()->SetBrightness(bright ? DISPLAY_NORMAL : DISPLAY_DIM);
+	  StateContext::Get()->display()->SetBrightness(bright ? DISPLAY_NORMAL : DISPLAY_DIM);
 	  bright = !bright;
 	}
       }
@@ -89,25 +84,25 @@ State* StartUpState::loop() {
 
   switch (b) {
   case 0:
-    s_context->button()->SetBrightness(0.33);
+    StateContext::Get()->button()->SetBrightness(0.33);
     break;
   case 1:
-    s_context->button()->SetBrightness(0.66);
+    StateContext::Get()->button()->SetBrightness(0.66);
     break;
   case 2:
-    s_context->button()->SetBrightness(1.00);
+    StateContext::Get()->button()->SetBrightness(1.00);
     break;
   }
   
   int h = (int)(360.0f * (float)elapsed / (float)DURATION);
   while (h > 360) h -= 360;
   while (h < 0) h += 360;
-  s_context->led()->set_hsv(h, 1.0f, 1.0f);
-  return (State*)0;
+  StateContext::Get()->led()->set_hsv(h, 1.0f, 1.0f);
+  return (mdlib::State*)0;
 }
 
-State* StartUpState::handle_event(mdlib::Event e) {
-  return (State*)0;
+mdlib::State* StartUpState::handle_event(mdlib::Event e) {
+  return (mdlib::State*)0;
 }
 
 static byte SEGMENT_COMMAND[5] = {0x7B, 0x7C, 0x7D, 0x7E, 0x77};
@@ -135,7 +130,7 @@ bool StartUpState::TryToSetSegment(int n) {
     return false;
 
   segments[b] |= bit;
-  s_context->display()->SetSegment(SEGMENT_COMMAND[b], segments[b]);
+  StateContext::Get()->display()->SetSegment(SEGMENT_COMMAND[b], segments[b]);
 
   return true;
 }
@@ -144,13 +139,13 @@ bool StartUpState::TryToSetSegment(int n) {
   const float BASE_STABLE_SIZE = 0.8;
 void WarmUpState::enter_state() {
   SetStartTime();
-  s_context->sensor()->SetDataStableSize(BASE_STABLE_SIZE);
-  s_context->sensor()->TurnOn();
-  s_context->fan()->TurnOff();
-  s_context->button()->SetBrightness(0.5);
-  s_context->button()->TurnOff();
-  s_context->display()->clear();
-  s_context->display()->SetBrightness(DISPLAY_NORMAL);
+  StateContext::Get()->sensor()->SetDataStableSize(BASE_STABLE_SIZE);
+  StateContext::Get()->sensor()->TurnOn();
+  StateContext::Get()->fan()->TurnOff();
+  StateContext::Get()->button()->SetBrightness(0.5);
+  StateContext::Get()->button()->TurnOff();
+  StateContext::Get()->display()->clear();
+  StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
   display_value_ = 0.0;
   pulse_start_ = millis();
 }
@@ -158,12 +153,12 @@ void WarmUpState::enter_state() {
 void WarmUpState::leave_state() {
   // the user may have double clicked the button and turned the fan on,
   // make sure it is off
-  s_context->fan()->TurnOff();
+  StateContext::Get()->fan()->TurnOff();
   SetDataStableSize(BASE_STABLE_SIZE);
   //  Serial.println("Leaving WarmUpState");
 }
 
-State* WarmUpState::loop() {
+mdlib::State* WarmUpState::loop() {
   const unsigned long PULSE_TIME = 450;
   const unsigned long GAP_TIME = 1550;
   unsigned long elapsed = millis() - pulse_start_;
@@ -199,10 +194,10 @@ State* WarmUpState::loop() {
   if (elapsed < PULSE_TIME) {
     v = 1.0 - (float)elapsed / (float)PULSE_TIME;
     v *= v;
-    s_context->led()->set_hsv(color, 1.0, v);
+    StateContext::Get()->led()->set_hsv(color, 1.0, v);
   }
   else {
-    s_context->led()->set_hsv(color, 1.0, 0.005);
+    StateContext::Get()->led()->set_hsv(color, 1.0, 0.005);
   }
 
   switch(display_mode_) {
@@ -210,54 +205,54 @@ State* WarmUpState::loop() {
     UpdateGraphicDisplay();
     break;
   case ALCOHOL_STDDEV:
-    v = s_context->sensor()->DataStdDev();
+    v = StateContext::Get()->sensor()->DataStdDev();
     if (v != display_value_) {
       display_value_ = v;
-      s_context->display()->set(display_value_, 2);
+      StateContext::Get()->display()->set(display_value_, 2);
     }
     break;
   case THERMISTOR_STDDEV:
-    v = s_context->sensor()->TempStdDev();
+    v = StateContext::Get()->sensor()->TempStdDev();
     if (v != display_value_) {
       display_value_ = v;
-      s_context->display()->set(display_value_, 2);
+      StateContext::Get()->display()->set(display_value_, 2);
     }
     break;
   case ALCOHOL_VALUE:
-    v = s_context->sensor()->RawAlcoholValue();
+    v = StateContext::Get()->sensor()->RawAlcoholValue();
     if (v != display_value_) {
       display_value_ = v;
-      s_context->display()->set((int)display_value_);
+      StateContext::Get()->display()->set((int)display_value_);
     }
     break;
   case THERMISTOR_VALUE:
-    v = s_context->sensor()->RawThermistor();
+    v = StateContext::Get()->sensor()->RawThermistor();
     if (v != display_value_) {
       display_value_ = v;
-      s_context->display()->set((int)display_value_);
+      StateContext::Get()->display()->set((int)display_value_);
     }
     break;
   }
 
-  if (s_context->sensor()->IsReady() || elapsed > (5 * 60 * 1000))
+  if (StateContext::Get()->sensor()->IsReady() || elapsed > (5 * 60 * 1000))
     return next_state_;
 
   if (data_stable_size_ == BASE_STABLE_SIZE && elapsed > (3 * 60 * 1000)) {
     SetDataStableSize(2 * BASE_STABLE_SIZE);
   }
-  return (State*)0;
+  return (mdlib::State*)0;
 }
 
 void WarmUpState::SetDataStableSize(float s) {
   data_stable_size_ = s;
-  s_context->sensor()->SetDataStableSize(s);
+  StateContext::Get()->sensor()->SetDataStableSize(s);
 }
-State* WarmUpState::handle_event(mdlib::Event e) {
+mdlib::State* WarmUpState::handle_event(mdlib::Event e) {
   if (e.event_type == mdlib::Event::BUTTON_DOUBLE_CLICK) {
-    if (s_context->fan()->IsOn())
-      s_context->fan()->TurnOff();
+    if (StateContext::Get()->fan()->IsOn())
+      StateContext::Get()->fan()->TurnOff();
     else
-      s_context->fan()->TurnOn();
+      StateContext::Get()->fan()->TurnOn();
   }
   else if (e.event_type == mdlib::Event::BUTTON_LONG_CLICK) {
     RotateDisplayMode();
@@ -271,7 +266,7 @@ void WarmUpState::UpdateGraphicDisplay() {
   // D = 0x08 (BOTTOM)
   // C + F = 0x24 (NOT READY)
   // A + G + D = 0x49 (UNSTABLE)
-  int temperature_trend = s_context->sensor()->GetTemperatureTrend();
+  int temperature_trend = StateContext::Get()->sensor()->GetTemperatureTrend();
   //  if (temperature_trend != temperature_trend_) {
   {
     temperature_trend_ = temperature_trend;
@@ -293,11 +288,11 @@ void WarmUpState::UpdateGraphicDisplay() {
       mask = 0x49;
       break;
     }
-    s_context->display()->SetDigitSegments(0, mask);
-    s_context->display()->SetDigitSegments(1, mask);
+    StateContext::Get()->display()->SetDigitSegments(0, mask);
+    StateContext::Get()->display()->SetDigitSegments(1, mask);
   }
 
-  int alcohol_trend = s_context->sensor()->GetAlcoholTrend();
+  int alcohol_trend = StateContext::Get()->sensor()->GetAlcoholTrend();
   //  if (alcohol_trend != alcohol_trend_) {
   {
     alcohol_trend_ = alcohol_trend;
@@ -319,14 +314,14 @@ void WarmUpState::UpdateGraphicDisplay() {
       mask = 0x49;
       break;
     }
-    s_context->display()->SetDigitSegments(2, mask);
-    s_context->display()->SetDigitSegments(3, mask);
+    StateContext::Get()->display()->SetDigitSegments(2, mask);
+    StateContext::Get()->display()->SetDigitSegments(3, mask);
   }
 }
   
 void WarmUpState::RotateDisplayMode() {
   display_value_ = -1; // force display update
-  s_context->display()->clear();
+  StateContext::Get()->display()->clear();
   switch(display_mode_) {
   case GRAPHIC:
     display_mode_ = ALCOHOL_STDDEV;
@@ -357,21 +352,21 @@ void WarmUpState::RotateDisplayMode() {
     SetStartTime();
     StartTimer();
 
-    s_context->sensor()->TurnOff();
-    s_context->sensor()->TurnOn();
-    s_context->button()->SetBrightness(0.5);
-    s_context->button()->TurnOff();
-    s_context->display()->clear();
-    s_context->display()->SetBrightness(DISPLAY_NORMAL);
-    s_context->fan()->TurnOff();
-    s_context->led()->set_hsv(120, 1.0, 0.1);
+    StateContext::Get()->sensor()->TurnOff();
+    StateContext::Get()->sensor()->TurnOn();
+    StateContext::Get()->button()->SetBrightness(0.5);
+    StateContext::Get()->button()->TurnOff();
+    StateContext::Get()->display()->clear();
+    StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
+    StateContext::Get()->fan()->TurnOff();
+    StateContext::Get()->led()->set_hsv(120, 1.0, 0.1);
   }
 
   void ReadyState::leave_state() {
     StopTimer();
   }
 
-  State* ReadyState::loop() {
+  mdlib::State* ReadyState::loop() {
     UpdateTimer();
     unsigned long elapsed = millis() - start_time_;
     
@@ -380,25 +375,25 @@ void WarmUpState::RotateDisplayMode() {
     if( (int)secs % 2) {
       float fraction = (float)elapsed/1000.0f - secs;
       if (fraction < 0.1)
-	s_context->button()->TurnOn();
+	StateContext::Get()->button()->TurnOn();
       else
-	s_context->button()->TurnOff();
+	StateContext::Get()->button()->TurnOff();
     }
     else
-      s_context->button()->TurnOff();
+      StateContext::Get()->button()->TurnOff();
 
     // count down display
     static unsigned long t = 999999;
     float time_left = timer_.GetSecondsRemaining();
     if ((int)time_left != t) {
       t = time_left;
-      s_context->display()->SetSeconds(t);
+      StateContext::Get()->display()->SetSeconds(t);
     }
 #if 0
     // Make the led Pulse green
 
     static int rise_count = 0;
-    if (s_context->sensor()->IsRising()) {
+    if (StateContext::Get()->sensor()->IsRising()) {
       rise_count++;
       if (rise_count > 5)
 	return next_state_;
@@ -406,10 +401,10 @@ void WarmUpState::RotateDisplayMode() {
     else
       rise_count = 0;
 #endif 
-    return (State*)0;
+    return (mdlib::State*)0;
   }
 
-  State* ReadyState::handle_event(mdlib::Event e) {
+  mdlib::State* ReadyState::handle_event(mdlib::Event e) {
     // advance to sampling if button clicked
     if (e.event_type == mdlib::Event::BUTTON_CLICK) {
       return next_state_;
@@ -418,7 +413,7 @@ void WarmUpState::RotateDisplayMode() {
       return timeout_next_state_;
     }
 
-    return (State*)0;
+    return (mdlib::State*)0;
   }
 
   ///////////////////// SamplingState
@@ -428,20 +423,20 @@ void WarmUpState::RotateDisplayMode() {
     SetStartTime();
     StartTimer();
     hue = 120;
-    s_context->display()->clear();
-    s_context->display()->set(1.0);
-    s_context->display()->SetBrightness(DISPLAY_NORMAL);
-    s_context->led()->set_hsv(hue, 1.0f,  1.0f);
-    s_context->sensor()->StartRecording();
+    StateContext::Get()->display()->clear();
+    StateContext::Get()->display()->set(1.0);
+    StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
+    StateContext::Get()->led()->set_hsv(hue, 1.0f,  1.0f);
+    StateContext::Get()->sensor()->StartRecording();
 
-    start_sample_ = s_context->sensor()->RawAlcoholValue();
+    start_sample_ = StateContext::Get()->sensor()->RawAlcoholValue();
   }
 
   void SamplingState::leave_state() {
     StopTimer();
   }
 
-  State* SamplingState::handle_event(mdlib::Event e) {
+  mdlib::State* SamplingState::handle_event(mdlib::Event e) {
     static bool fanIsOn = false;
 
     if (e.event_type == mdlib::Event::TIMER_DONE) {
@@ -456,7 +451,7 @@ void WarmUpState::RotateDisplayMode() {
       UpdateDisplay();
       StartTimer();
       // If we peg the meter, might as well move along
-      if (s_context->sensor()->GetMaximum() == 1023)
+      if (StateContext::Get()->sensor()->GetMaximum() == 1023)
         return next_state_;
     }
     return 0;
@@ -482,16 +477,16 @@ void WarmUpState::RotateDisplayMode() {
   }
 
   void SamplingState::UpdateDisplay() {
-    int sample = s_context->sensor()->GetMaximum();
+    int sample = StateContext::Get()->sensor()->GetMaximum();
 
     float pct = (float)(sample - start_sample_) / (float)(1023 - start_sample_);
     int hue = hueMap(pct);
 
-    s_context->led()->set_hsv(hue, 1.0f, 1.0f);
-    s_context->display()->set((int)(pct * 100.0));
+    StateContext::Get()->led()->set_hsv(hue, 1.0f, 1.0f);
+    StateContext::Get()->display()->set((int)(pct * 100.0));
   }
 
-  State* SamplingState::loop() {
+  mdlib::State* SamplingState::loop() {
     UpdateTimer();
     return 0;
   }
@@ -502,16 +497,16 @@ void WarmUpState::RotateDisplayMode() {
     Serial.println(name());
     SetStartTime();
     StartTimer();
-    s_context->display()->SetBrightness(DISPLAY_NORMAL);
-    s_context->fan()->TurnOn();
-    s_context->button()->TurnOff();
+    StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
+    StateContext::Get()->fan()->TurnOn();
+    StateContext::Get()->button()->TurnOff();
   }
 
   void PostSampleState::leave_state() {
     StopTimer();
   }
 
-  State* PostSampleState::handle_event(mdlib::Event e) {
+  mdlib::State* PostSampleState::handle_event(mdlib::Event e) {
     if (e.event_type == mdlib::Event::TIMER_DONE)
       return timeout_next_state_;
 
@@ -521,7 +516,7 @@ void WarmUpState::RotateDisplayMode() {
     return 0;
   }
 
-  State* PostSampleState::loop() {
+  mdlib::State* PostSampleState::loop() {
     // blink the display
     unsigned long elapsed = millis() - start_time_;
     static bool display_on = false;
@@ -532,14 +527,14 @@ void WarmUpState::RotateDisplayMode() {
 	display_on = on;
 	Serial.print(" - ON: ");
 	Serial.println(on);
-	s_context->display()->SetBrightness( on ? DISPLAY_NORMAL : 0.0);
+	StateContext::Get()->display()->SetBrightness( on ? DISPLAY_NORMAL : 0.0);
       }
     }
     else if (!display_on) {
       display_on = true;
       Serial.print(" + ON: ");
       Serial.println(display_on);
-      s_context->display()->SetBrightness(DISPLAY_NORMAL);
+      StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
     }
     UpdateTimer();
     return 0;
@@ -550,16 +545,16 @@ void WarmUpState::RotateDisplayMode() {
   void PostSample2State::enter_state() {
     SetStartTime();
     StartTimer();
-    s_context->display()->SetBrightness(DISPLAY_NORMAL);
-    s_context->fan()->TurnOff();
-    s_context->button()->TurnOff();
+    StateContext::Get()->display()->SetBrightness(DISPLAY_NORMAL);
+    StateContext::Get()->fan()->TurnOff();
+    StateContext::Get()->button()->TurnOff();
   }
 
   void PostSample2State::leave_state() {
     StopTimer();
   }
 
-  State* PostSample2State::handle_event(mdlib::Event e) {
+  mdlib::State* PostSample2State::handle_event(mdlib::Event e) {
     if (e.event_type == mdlib::Event::TIMER_DONE)
       return timeout_next_state_;
 
@@ -575,18 +570,18 @@ void WarmUpState::RotateDisplayMode() {
     SetStartTime();
     StartTimer();
     
-    s_context->fan()->TurnOff();
+    StateContext::Get()->fan()->TurnOff();
 
-    s_context->led()->set_hsv(120, 1.0, 0.005);
-    s_context->button()->SetBrightness(0.5);
-    s_context->display()->SetBrightness(DISPLAY_DIM);
+    StateContext::Get()->led()->set_hsv(120, 1.0, 0.005);
+    StateContext::Get()->button()->SetBrightness(0.5);
+    StateContext::Get()->display()->SetBrightness(DISPLAY_DIM);
   }
 
   void PowerSaverState::leave_state() {
     StopTimer();
   }
 
-  State* PowerSaverState::handle_event(mdlib::Event e) {
+  mdlib::State* PowerSaverState::handle_event(mdlib::Event e) {
     if (e.event_type == mdlib::Event::BUTTON_CLICK)
       return next_state_;
 
@@ -598,7 +593,7 @@ void WarmUpState::RotateDisplayMode() {
 
   // LOOP
   // blink the button and led dimmer & with longer off cycle
-  State* PowerSaverState::loop() {
+  mdlib::State* PowerSaverState::loop() {
     UpdateTimer();
     unsigned long elapsed = millis() - start_time_;
     // make the button blink
@@ -606,12 +601,12 @@ void WarmUpState::RotateDisplayMode() {
     if( (int)secs % 2) {
       float fraction = (float)elapsed/2000.0f - secs;
       if (fraction < 0.05)
-	s_context->button()->TurnOn();
+	StateContext::Get()->button()->TurnOn();
       else
-	s_context->button()->TurnOff();
+	StateContext::Get()->button()->TurnOff();
     }
     else
-      s_context->button()->TurnOff();
+      StateContext::Get()->button()->TurnOff();
 
     // count down display
     static int t = 999999;
@@ -619,7 +614,7 @@ void WarmUpState::RotateDisplayMode() {
 
     if ((int)time_left != t) {
       t = time_left;
-      s_context->display()->SetSeconds(t);
+      StateContext::Get()->display()->SetSeconds(t);
     }
     
     return 0;
@@ -627,14 +622,14 @@ void WarmUpState::RotateDisplayMode() {
 ///////////////////////// SleepState
 
   void SleepState::enter_state() {
-    s_context->led()->TurnOff();
-    s_context->button()->TurnOff();
-    s_context->sensor()->TurnOff();
-    s_context->display()->clear();
-    s_context->display()->set("    ");
+    StateContext::Get()->led()->TurnOff();
+    StateContext::Get()->button()->TurnOff();
+    StateContext::Get()->sensor()->TurnOff();
+    StateContext::Get()->display()->clear();
+    StateContext::Get()->display()->set("    ");
   }
 
-  State* SleepState::handle_event(mdlib::Event e) {
+  mdlib::State* SleepState::handle_event(mdlib::Event e) {
     if (e.event_type == mdlib::Event::BUTTON_CLICK ||
 	e.event_type == mdlib::Event::BUTTON_LONG_CLICK ||
 	e.event_type == mdlib::Event::BUTTON_DOWN	||
@@ -644,7 +639,7 @@ void WarmUpState::RotateDisplayMode() {
     return 0;
   }
 
-  State* SleepState::loop() {
+  mdlib::State* SleepState::loop() {
     Narcoleptic.delay(2000);
     return 0;
   }
