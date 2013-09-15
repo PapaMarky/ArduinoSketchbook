@@ -1,0 +1,17 @@
+
+
+Code for simple touch switch
+http://playground.arduino.cc/Code/CapacitiveSensor
+
+Lots of good stuff:
+ * how to bootload ATMEGA
+ * wiring of simple touch switch
+http://www.instructables.com/id/Capacitive-Touch-Arduino-Lamp/?ALLSTEPS
+
+how to make a theramin
+http://www.strangeapparatus.com/Theremin.html
+
+How to make a two electrode touch switch with a darlington pair:
+http://forum.arduino.cc/index.php?topic=94835.0
+(scroll to the very last comment)
+
