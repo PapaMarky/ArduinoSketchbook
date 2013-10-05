@@ -3411,7 +3411,6 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <part name="JP2" library="SparkFun-Connectors" deviceset="M01" device="PTH" value="TOUCH"/>
 <part name="R10" library="SparkFun-Resistors" deviceset="RESISTOR" device="AXIAL-0.3" value="10K"/>
 <part name="GND7" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
-<part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="SUPPLY7" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="SUPPLY8" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 </parts>
@@ -3468,7 +3467,6 @@ Test</text>
 <instance part="JP2" gate="G$1" x="96.52" y="40.64" rot="R90"/>
 <instance part="R10" gate="G$1" x="76.2" y="157.48"/>
 <instance part="GND7" gate="1" x="60.96" y="152.4"/>
-<instance part="SUPPLY3" gate="G$1" x="124.46" y="167.64"/>
 <instance part="SUPPLY7" gate="G$1" x="124.46" y="167.64"/>
 <instance part="SUPPLY8" gate="G$1" x="104.14" y="167.64"/>
 </instances>
@@ -3557,16 +3555,10 @@ Test</text>
 <wire x1="68.58" y1="53.34" x2="68.58" y2="60.96" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="SUPPLY3" gate="G$1" pin="5V"/>
-<pinref part="SUPPLY7" gate="G$1" pin="5V"/>
-<pinref part="JP1" gate="G$1" pin="VCC"/>
-<wire x1="132.08" y1="154.94" x2="124.46" y2="154.94" width="0.1524" layer="91"/>
-<wire x1="124.46" y1="154.94" x2="124.46" y2="167.64" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<wire x1="109.22" y1="142.24" x2="86.36" y2="142.24" width="0.1524" layer="91"/>
 <pinref part="SUPPLY5" gate="G$1" pin="5V"/>
 <wire x1="109.22" y1="142.24" x2="109.22" y2="167.64" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="PC1(ADC1)"/>
+<wire x1="88.9" y1="142.24" x2="109.22" y2="142.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -3654,7 +3646,6 @@ Test</text>
 <wire x1="116.84" y1="99.06" x2="116.84" y2="119.38" width="0.1524" layer="91"/>
 <wire x1="116.84" y1="119.38" x2="121.92" y2="119.38" width="0.1524" layer="91"/>
 <junction x="116.84" y="99.06"/>
-<wire x1="124.46" y1="99.06" x2="121.92" y2="99.06" width="0.1524" layer="91"/>
 <junction x="116.84" y="78.74"/>
 <pinref part="LED6" gate="G$1" pin="C"/>
 <wire x1="121.92" y1="99.06" x2="116.84" y2="99.06" width="0.1524" layer="91"/>
@@ -3820,6 +3811,12 @@ Test</text>
 <junction x="96.52" y="157.48"/>
 <pinref part="R10" gate="G$1" pin="2"/>
 <wire x1="81.28" y1="157.48" x2="96.52" y2="157.48" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$22" class="0">
+<segment>
+<pinref part="JP1" gate="G$1" pin="VCC"/>
+<wire x1="132.08" y1="154.94" x2="124.46" y2="154.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
