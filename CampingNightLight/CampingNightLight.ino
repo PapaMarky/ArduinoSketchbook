@@ -18,9 +18,9 @@ const int LOW_BATTERY_LED = 4;
 const int TOUCH_SENSOR = 7;
 
 const int PHOTOCELL = A0;
-const int BATTERY = A2;
+const int BATTERY = A1;
 
-const float BATTERY_THRESHOLD_ON = 3.5;
+const float BATTERY_THRESHOLD_ON = 4.0f;
 
 namespace CampLight {
 
@@ -108,7 +108,13 @@ class AdjustBrightnessState : public mdlib::State {
     virtual void leave_state();
     virtual const char* name() const { return "AdjustBrightnessState"; }
   private:
+    const static byte MAX_B = 254;
+    const static byte MIN_B = 3;
+    const static unsigned long DELAY = 2000;
     int direction_;
+    byte initial_brightness_;
+    unsigned long elapsed_offset_;
+    int seconds_;
 } ADJUST_BRIGHTNESS_STATE;
 
 mdlib::State* state_ = (mdlib::State*)0;
@@ -147,20 +153,14 @@ void setup() {
   CampLight::context_.setup();
   CampLight::set_state(&CampLight::ON_STATE);
 }
-
-static float brightness = 255;
-const int off_threshhold = 190;
-const int on_threshhold = 130;
-static bool battery_is_low = false;
-
-static bool switch_on = false;
 void loop() {
   CampLight::context_.update();
 
   // Manage Events
   while (mdlib::CountEvents() > 0) {
-    //Serial.println("HANDLING EVENT");
     mdlib::Event e = mdlib::HandleEvent();
+    //Serial.print("HANDLING EVENT: ");
+    //Serial.println(e.event_type);
 
     mdlib::State* next_state = CampLight::state_->handle_event(e);
     if (next_state)
@@ -170,46 +170,6 @@ void loop() {
   mdlib::State* next_state = CampLight::state_->loop();
   if (next_state)
     CampLight::set_state(next_state);
-    
-#if 0  
-  static bool on = false;
-  int light = analogRead(PHOTOCELL);
-  //Serial.print("light: ");
-  //Serial.println(light);
-  //int d = 1024 - analogRead(DIMMER);
-  //float dimmer = 1.0;(float)d /1023.0;
-  float battery = 5.0 * (float)analogRead(BATTERY)/1024.0;
-  uint8_t cap = readCapacitivePin(TOUCH_SENSOR);
-  bool swtch = cap > 5; //check_switch();
-  Serial.print("CAP: ");
-  Serial.println(cap);
-  //Serial.print("battery level: ");
-  //Serial.println(battery);
-  //battery_is_low = swtch;
-  battery = swtch ? 0 : BATTERY_THRESHOLD_ON;
-  if (!battery_is_low && battery < BATTERY_THRESHOLD_ON) {
-    digitalWrite(LOW_BATTERY_LED, HIGH);
-    battery_is_low = true;
-  } else if (battery >= BATTERY_THRESHOLD_ON) {
-    battery_is_low = false;
-    digitalWrite(LOW_BATTERY_LED, LOW);
-  }
-  
-  on = (light < (on ? off_threshhold : on_threshhold));
-  int brightness = (int)max(255.0, 1.0);
-  int b = on ? brightness : 0;
-  //Serial.println(brightness);
-  static int last_b = 0;
-  if (b != last_b) {
-    last_b = b;
-    analogWrite(NIGHT_LIGHT, b);
-  }
-
-  if (on)
-    delay(10);
-  else
-    delay(1000); // Narcoleptic.delay(1000);
-#endif // 0
 }
 
 namespace CampLight {
@@ -286,6 +246,8 @@ void TouchSwitch::update() {
   *port &= ~(bitmask);
   *ddr  |= bitmask;
 
+//  Serial.print("* cycles: ");
+//  Serial.println(cycles);
   bool new_is_on = cycles > cut_off_;
   
   if (is_on_ != new_is_on) {
@@ -309,12 +271,17 @@ void BatteryMonitor::update() {
   battery_low_light_.update();
   
   int level = battery_voltage_.read();
-  
+#if 0
+  Serial.print("battery level: ");
+  Serial.print(level);
+  Serial.print(", threshold: ");
+  Serial.println(threshold_);
+#endif
   bool new_battery_is_low = level < threshold_;
   
   if (new_battery_is_low != battery_is_low_) {
     battery_is_low_ = new_battery_is_low;
-    if (battery_is_low)
+    if (battery_is_low_)
       battery_low_light_.TurnOn();
     else
       battery_low_light_.TurnOff();
@@ -322,7 +289,7 @@ void BatteryMonitor::update() {
 }
 
 void BatteryMonitor::set_threshold(float t) {
-  threshold_ = (int)(t * 1023.0);
+  threshold_ = (int)((t/5.0f) * 1023.0);
 }
 
 ///////////////////////////////////////////////////////
@@ -354,12 +321,12 @@ void Context::update() {
 ///////////////////////////////////////////////////////
 mdlib::State* OnState::loop() {
   const unsigned long ON_DELAY = 1000;
-  const int ON_THRESHOLD = 130;
+  const int OFF_THRESHOLD = 190;
   unsigned long elapsed = millis() - start_time_;
   
   if (elapsed > ON_DELAY) {
     int light = Context::Get()->photo_cell()->read();
-    if (light < ON_THRESHOLD) {
+    if (light > OFF_THRESHOLD) {
       return next_state_;
     }
   }
@@ -375,6 +342,7 @@ mdlib::State* OnState::handle_event(mdlib::Event e) {
 }
 
 void OnState::enter_state() {
+  SetStartTime();
   Context::Get()->night_light()->setLevel(Context::Get()->brightness());
 }
 
@@ -387,12 +355,12 @@ void OnState::leave_state() {
 mdlib::State* OffState::loop() {
   // TODO rewrite using narcoleptic delay
   const unsigned long OFF_DELAY = 1000;
-  const int OFF_THRESHOLD = 190;
+  const int ON_THRESHOLD = 130;
   unsigned long elapsed = millis() - start_time_;
   
   if (elapsed > OFF_DELAY) {
     int light = Context::Get()->photo_cell()->read();
-    if (light > OFF_THRESHOLD) {
+    if (light < ON_THRESHOLD) {
       return next_state_;
     }
   }
@@ -408,6 +376,7 @@ mdlib::State* OffState::handle_event(mdlib::Event e) {
 }
 
 void OffState::enter_state() {
+  SetStartTime();
   Context::Get()->night_light()->setLevel(0.0f);
 }
 
@@ -418,25 +387,43 @@ void OffState::leave_state() {}
 // Implementation: AdjustBrightnessState
 ///////////////////////////////////////////////////////
 mdlib::State* AdjustBrightnessState::loop() {
-  const byte MAX_B = 254;
-  const byte MIN_B = 1;
-  const unsigned long DELAY = 1000;
   unsigned long elapsed = millis() - start_time_;
+  elapsed += elapsed_offset_;
+  int n = elapsed / DELAY;
+  float pct = (float)elapsed / (float)DELAY;
+  pct = pct - (int)pct;
   
-  if (elapsed > DELAY) {
-    byte b = Context::Get()->brightness();
-    b = b + direction_;
-    if (b >= MAX_B) {
-      direction_ = -1;
-      b = MAX_B;
-    }
-    else if (b <= MIN_B) {
-      direction_ = 1;
-      b = MIN_B;
-    }
-    Context::Get()->set_brightness(b);
-    Context::Get()->night_light()->setLevel(b);
+  if (seconds_ != n) {
+    seconds_ = n;
+    direction_ = direction_ * -1;
+    Serial.println(" ** change direction **");
   }
+  // calculate the new b based on elapsed time
+  if (direction_ < 0)
+    pct = 1.0f - pct;
+
+#if 0
+  Serial.print(" - seconds: ");
+  Serial.print(seconds_);
+  Serial.print(", elapsed: ");
+  Serial.print(elapsed);
+  Serial.print(", pct: ");
+  Serial.print(pct, 2);
+#endif
+
+  int b = (byte)((float)MIN_B + pct * (float)(MAX_B - MIN_B));
+  if (b > 254)
+    b -= 254;
+  if (b < 0)
+    b += 254;
+#if 0
+  Serial.print(", b: ");
+  Serial.print(b);
+  Serial.print(" -> ");
+  Serial.println(initial_brightness_);
+#endif
+  Context::Get()->set_brightness((byte)b);
+  Context::Get()->night_light()->setLevel((byte)b);
   return (mdlib::State*)0; 
 }
 
@@ -447,7 +434,18 @@ mdlib::State* AdjustBrightnessState::handle_event(mdlib::Event e) {
   return (mdlib::State*)0; 
 }
 void AdjustBrightnessState::enter_state() {
-  Context::Get()->night_light()->setLevel(Context::Get()->brightness());
+  SetStartTime();
+  initial_brightness_ = Context::Get()->brightness();
+  Context::Get()->night_light()->setLevel(initial_brightness_);
+  // calculate the 'elapsed time offset' based on direction_ and initial_brightness_
+  // it takes DELAY to get from MIN_B to MAX_B (or back)
+  int off = 0;
+  float pct = (float)(initial_brightness_ - MIN_B)/(float)(MAX_B - MIN_B);
+  if (direction_ < 0)
+    pct = 1.0f - pct;
+    
+  elapsed_offset_ = (int)(pct * (float)DELAY);
+  seconds_ = 0;
 }
 void AdjustBrightnessState::leave_state() {
 }
