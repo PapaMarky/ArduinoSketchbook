@@ -26,9 +26,22 @@ const float BATTERY_THRESHOLD_ON = 3.5;
 namespace CampLight {
 
   // Parts
+enum Events {
+  TOUCH_SWITCH_ON = 500,
+  TOUCH_SWITCH_OFF = 501,
+};
+
 class TouchSwitch : public mdlib::BaseIO {
   public:
-  virtual void setup() const {};
+    TouchSwitch() : cut_off_(5), is_on_(false) {};
+    virtual void setup() const;
+    virtual void update();
+    
+    void set_cut_off(int s) { cut_off_ = s; }
+
+  private:
+    int cut_off_;
+    bool is_on_;
 };
 
 class Context : public mdlib::StateContext {
@@ -85,8 +98,6 @@ void set_state(mdlib::State* state) {
 }
 
 } // namespace CampLamp
-
-
 
 uint8_t readCapacitivePin(int pinToMeasure);
 
@@ -171,7 +182,13 @@ void loop() {
 #endif // 0
 }
 
-// From:
+namespace CampLight {
+///////////////////////////////////////////////////////
+// Implementation: TouchSwitch
+///////////////////////////////////////////////////////
+void TouchSwitch::setup() const {
+}
+// Based on:
 // http://playground.arduino.cc/Code/CapacitiveSensor
 
 // readCapacitivePin
@@ -181,19 +198,20 @@ void loop() {
 //  When you touch the pin, or whatever you have
 //  attached to it, the number will get higher
 #include "pins_arduino.h" // Arduino pre-1.0 needs this
-uint8_t readCapacitivePin(int pinToMeasure) {
+
+void TouchSwitch::update() {
   // Variables used to translate from Arduino to AVR pin naming
   volatile uint8_t* port;
   volatile uint8_t* ddr;
-  volatile uint8_t* pin;
+  volatile uint8_t* PIN;
   // Here we translate the input pin number from
   //  Arduino pin number to the AVR PORT, PIN, DDR,
   //  and which bit of those registers we care about.
   byte bitmask;
-  port = portOutputRegister(digitalPinToPort(pinToMeasure));
-  ddr = portModeRegister(digitalPinToPort(pinToMeasure));
-  bitmask = digitalPinToBitMask(pinToMeasure);
-  pin = portInputRegister(digitalPinToPort(pinToMeasure));
+  port = portOutputRegister(digitalPinToPort(pin()));
+  ddr = portModeRegister(digitalPinToPort(pin()));
+  bitmask = digitalPinToBitMask(pin());
+  PIN = portInputRegister(digitalPinToPort(pin()));
   // Discharge the pin first by setting it low and output
   *port &= ~(bitmask);
   *ddr  |= bitmask;
@@ -208,23 +226,23 @@ uint8_t readCapacitivePin(int pinToMeasure) {
   // decreases the number of hardware cycles between each read of the pin,
   // thus increasing sensitivity.
   uint8_t cycles = 17;
-       if (*pin & bitmask) { cycles =  0;}
-  else if (*pin & bitmask) { cycles =  1;}
-  else if (*pin & bitmask) { cycles =  2;}
-  else if (*pin & bitmask) { cycles =  3;}
-  else if (*pin & bitmask) { cycles =  4;}
-  else if (*pin & bitmask) { cycles =  5;}
-  else if (*pin & bitmask) { cycles =  6;}
-  else if (*pin & bitmask) { cycles =  7;}
-  else if (*pin & bitmask) { cycles =  8;}
-  else if (*pin & bitmask) { cycles =  9;}
-  else if (*pin & bitmask) { cycles = 10;}
-  else if (*pin & bitmask) { cycles = 11;}
-  else if (*pin & bitmask) { cycles = 12;}
-  else if (*pin & bitmask) { cycles = 13;}
-  else if (*pin & bitmask) { cycles = 14;}
-  else if (*pin & bitmask) { cycles = 15;}
-  else if (*pin & bitmask) { cycles = 16;}
+       if (*PIN & bitmask) { cycles =  0;}
+  else if (*PIN & bitmask) { cycles =  1;}
+  else if (*PIN & bitmask) { cycles =  2;}
+  else if (*PIN & bitmask) { cycles =  3;}
+  else if (*PIN & bitmask) { cycles =  4;}
+  else if (*PIN & bitmask) { cycles =  5;}
+  else if (*PIN & bitmask) { cycles =  6;}
+  else if (*PIN & bitmask) { cycles =  7;}
+  else if (*PIN & bitmask) { cycles =  8;}
+  else if (*PIN & bitmask) { cycles =  9;}
+  else if (*PIN & bitmask) { cycles = 10;}
+  else if (*PIN & bitmask) { cycles = 11;}
+  else if (*PIN & bitmask) { cycles = 12;}
+  else if (*PIN & bitmask) { cycles = 13;}
+  else if (*PIN & bitmask) { cycles = 14;}
+  else if (*PIN & bitmask) { cycles = 15;}
+  else if (*PIN & bitmask) { cycles = 16;}
 
   // End of timing-critical section
   interrupts();
@@ -238,13 +256,17 @@ uint8_t readCapacitivePin(int pinToMeasure) {
   *port &= ~(bitmask);
   *ddr  |= bitmask;
 
-  return cycles;
+  bool new_is_on = cycles > cut_off_;
+  
+  if (is_on_ != new_is_on) {
+    is_on_ = new_is_on;
+    mdlib::PostEvent(mdlib::Event((is_on_ ? TOUCH_SWITCH_ON : TOUCH_SWITCH_OFF), (int)this));
+  }
 }
 
 ///////////////////////////////////////////////////////
 // Implementation: Context
 ///////////////////////////////////////////////////////
-namespace CampLight {
 void Context::setup() {
   
   battery_low_light.set_pin(LOW_BATTERY_LED);
@@ -270,4 +292,4 @@ void Context::update() {
   night_light.update();
   touch_switch.update();
 }
-}
+} // namespace CampLight
