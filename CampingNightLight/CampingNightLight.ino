@@ -1,25 +1,112 @@
+#include <Button.h>
+#include <EventQueue.h>
+#include <LightedButton.h>
+#include <Timers.h>
+
+#include <mdBase.h>
+#include <MultiColorLED.h>
+#include <Queue.h>
+#include <SevenSegmentDisplay.h>
+#include <StateMachine.h>
+
+
 #include <Narcoleptic.h>
 
-const int PWM_1 = 3; // the transistor
+// Pin definitions
+const int NIGHT_LIGHT = 3;
 const int LOW_BATTERY_LED = 4;
 
 const int PHOTOCELL = A0;
 const int BATTERY = A2;
 
-const int TOUCH_SENSOR = 10;
+const int TOUCH_SENSOR = 7;
 
 const float BATTERY_THRESHOLD_ON = 3.5;
+
+namespace CampLight {
+
+  // Parts
+class TouchSwitch : public mdlib::BaseIO {
+  public:
+  virtual void setup() const {};
+};
+
+class Context : public mdlib::StateContext {
+  public:
+    Context() {};
+    
+    void setup();
+    void update();
+    
+    static Context* Get() { return reinterpret_cast<Context*>(mdlib::State::s_context); };
+    
+  private:
+    TouchSwitch touch_switch;
+    mdlib::DigitalOutput battery_low_light;
+    mdlib::AnalogInput battery_voltage;
+    mdlib::AnalogOutput night_light;
+    mdlib::AnalogInput photo_cell;    
+} context_;
+
+class OnState : public mdlib::State {
+  public:
+  virtual mdlib::State* loop() { return (mdlib::State*)0; }
+  virtual mdlib::State* handle_event(mdlib::Event e) { return (mdlib::State*)0; }
+  virtual const char* name() const { return "OnState"; }
+} ON_STATE;
+
+class OffState : public mdlib::State {
+  virtual mdlib::State* loop() { return (mdlib::State*)0; }
+  virtual mdlib::State* handle_event(mdlib::Event e) { return (mdlib::State*)0; }
+  virtual const char* name() const { return "OffState"; }
+} OFF_STATE;
+
+class AdjustBrightnessState : public mdlib::State {
+  virtual mdlib::State* loop() { return (mdlib::State*)0; }
+  virtual mdlib::State* handle_event(mdlib::Event e) { return (mdlib::State*)0; }
+  virtual const char* name() const { return "AdjustBrightnessState"; }
+} ADJUST_BRIGHTNESS_STATE;
+
+mdlib::State* state_ = (mdlib::State*)0;
+unsigned long state_start_millis_ = 0;
+
+void set_state(mdlib::State* state) {
+  if (state_) {
+    state_->leave_state();
+  }
+  state_ = state;
+  state_start_millis_ = millis();
+  state_->enter_state();
+#if 0
+  Serial.print("set_state(\"");
+  Serial.print(state_->name());
+  Serial.println("\")");
+#endif
+}
+
+} // namespace CampLamp
+
+
 
 uint8_t readCapacitivePin(int pinToMeasure);
 
 void setup() {
   Serial.begin(9600);
-  // put your setup code here, to run once:
-  pinMode(PWM_1, OUTPUT);
-  pinMode(LOW_BATTERY_LED, OUTPUT);
-  pinMode(BATTERY, INPUT);
-  pinMode(PHOTOCELL, INPUT);
+
+  // Set up state machine
+  CampLight::ON_STATE.set_next_state(&CampLight::OFF_STATE);
+  CampLight::ON_STATE.set_timeout_next_state(&CampLight::ADJUST_BRIGHTNESS_STATE);
+  
+  CampLight::OFF_STATE.set_next_state(&CampLight::ON_STATE);
+  CampLight::OFF_STATE.set_timeout_next_state(&CampLight::ADJUST_BRIGHTNESS_STATE);
+  
+  CampLight::ADJUST_BRIGHTNESS_STATE.set_next_state(&CampLight::ON_STATE);
+
+  mdlib::State::set_context(&CampLight::context_);  
+  CampLight::context_.setup();
+  CampLight::set_state(&CampLight::ON_STATE);
 }
+
 static float brightness = 255;
 const int off_threshhold = 190;
 const int on_threshhold = 130;
@@ -27,12 +114,29 @@ static bool battery_is_low = false;
 
 static bool switch_on = false;
 void loop() {
+  CampLight::context_.update();
+
+  // Manage Events
+  while (mdlib::CountEvents() > 0) {
+    //Serial.println("HANDLING EVENT");
+    mdlib::Event e = mdlib::HandleEvent();
+
+    mdlib::State* next_state = CampLight::state_->handle_event(e);
+    if (next_state)
+      CampLight::set_state(next_state);
+  }
+
+  mdlib::State* next_state = CampLight::state_->loop();
+  if (next_state)
+    CampLight::set_state(next_state);
+    
+#if 0  
   static bool on = false;
   int light = analogRead(PHOTOCELL);
   //Serial.print("light: ");
   //Serial.println(light);
-  int d = 1024 - analogRead(DIMMER);
-  float dimmer = 1.0;(float)d /1023.0;
+  //int d = 1024 - analogRead(DIMMER);
+  //float dimmer = 1.0;(float)d /1023.0;
   float battery = 5.0 * (float)analogRead(BATTERY)/1024.0;
   uint8_t cap = readCapacitivePin(TOUCH_SENSOR);
   bool swtch = cap > 5; //check_switch();
@@ -49,21 +153,22 @@ void loop() {
     battery_is_low = false;
     digitalWrite(LOW_BATTERY_LED, LOW);
   }
+  
   on = (light < (on ? off_threshhold : on_threshhold));
-  int brightness = (int)max(255.0 * dimmer, 1.0);
+  int brightness = (int)max(255.0, 1.0);
   int b = on ? brightness : 0;
   //Serial.println(brightness);
   static int last_b = 0;
   if (b != last_b) {
     last_b = b;
-    analogWrite(PWM_1, b);
+    analogWrite(NIGHT_LIGHT, b);
   }
 
   if (on)
     delay(10);
   else
     delay(1000); // Narcoleptic.delay(1000);
-  
+#endif // 0
 }
 
 // From:
@@ -136,3 +241,33 @@ uint8_t readCapacitivePin(int pinToMeasure) {
   return cycles;
 }
 
+///////////////////////////////////////////////////////
+// Implementation: Context
+///////////////////////////////////////////////////////
+namespace CampLight {
+void Context::setup() {
+  
+  battery_low_light.set_pin(LOW_BATTERY_LED);
+  battery_low_light.setup();
+
+  battery_voltage.set_pin(BATTERY);
+  battery_voltage.setup();
+  
+  night_light.set_pin(NIGHT_LIGHT);
+  night_light.setup();
+
+  photo_cell.set_pin(PHOTOCELL);
+  photo_cell.setup();
+
+  touch_switch.set_pin(TOUCH_SENSOR);
+  touch_switch.setup();
+}
+
+void Context::update() {
+  battery_voltage.update();
+  battery_low_light.update();
+  photo_cell.update();
+  night_light.update();
+  touch_switch.update();
+}
+}
