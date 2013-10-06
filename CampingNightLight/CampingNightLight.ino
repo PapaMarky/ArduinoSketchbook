@@ -60,7 +60,7 @@ class BatteryMonitor {
 
 class Context : public mdlib::StateContext {
   public:
-    Context() : brightness_(0.5) {};
+    Context() : brightness_(128) {};
     
     void setup();
     void update();
@@ -70,40 +70,45 @@ class Context : public mdlib::StateContext {
     mdlib::AnalogOutput* night_light() { return &night_light_; }
     mdlib::AnalogInput* photo_cell() { return &photo_cell_; }
     
-    void set_brightness(float b) { brightness_ = b; }
-    float brightness() { return brightness_; }
+    void set_brightness(byte b) { brightness_ = b; }
+    byte brightness() { return brightness_; }
     
   private:
     TouchSwitch touch_switch_;
     BatteryMonitor battery_monitor_;
     mdlib::AnalogOutput night_light_;
     mdlib::AnalogInput photo_cell_;
-    float brightness_; // 0.0 - 1.0
+    byte brightness_; // 0 - 254
 } context_;
 
 class OnState : public mdlib::State {
   public:
-  virtual mdlib::State* loop();
-  virtual mdlib::State* handle_event(mdlib::Event e);
-  virtual void enter_state();
-  virtual void leave_state();
-  virtual const char* name() const { return "OnState"; }
+    virtual mdlib::State* loop();
+    virtual mdlib::State* handle_event(mdlib::Event e);
+    virtual void enter_state();
+    virtual void leave_state();
+    virtual const char* name() const { return "OnState"; }
 } ON_STATE;
 
 class OffState : public mdlib::State {
-  virtual mdlib::State* loop();
-  virtual mdlib::State* handle_event(mdlib::Event e);
-  virtual void enter_state();
-  virtual void leave_state();
-  virtual const char* name() const { return "OffState"; }
+  public:
+    virtual mdlib::State* loop();
+    virtual mdlib::State* handle_event(mdlib::Event e);
+    virtual void enter_state();
+    virtual void leave_state();
+    virtual const char* name() const { return "OffState"; }
 } OFF_STATE;
 
 class AdjustBrightnessState : public mdlib::State {
-  virtual mdlib::State* loop();
-  virtual mdlib::State* handle_event(mdlib::Event e);
-  virtual void enter_state();
-  virtual void leave_state();
-  virtual const char* name() const { return "AdjustBrightnessState"; }
+  public:
+    AdjustBrightnessState() : direction_(1) {}
+    virtual mdlib::State* loop();
+    virtual mdlib::State* handle_event(mdlib::Event e);
+    virtual void enter_state();
+    virtual void leave_state();
+    virtual const char* name() const { return "AdjustBrightnessState"; }
+  private:
+    int direction_;
 } ADJUST_BRIGHTNESS_STATE;
 
 mdlib::State* state_ = (mdlib::State*)0;
@@ -136,6 +141,7 @@ void setup() {
   CampLight::OFF_STATE.set_timeout_next_state(&CampLight::ADJUST_BRIGHTNESS_STATE);
   
   CampLight::ADJUST_BRIGHTNESS_STATE.set_next_state(&CampLight::ON_STATE);
+  CampLight::ADJUST_BRIGHTNESS_STATE.set_timeout_next_state(&CampLight::ON_STATE);
 
   mdlib::State::set_context(&CampLight::context_);  
   CampLight::context_.setup();
@@ -394,7 +400,7 @@ mdlib::State* OffState::loop() {
   return (mdlib::State*)0; 
 }
 
-mdlib::State* OffState::handle_event(mdlib::Event e) { 
+mdlib::State* OffState::handle_event(mdlib::Event e) {
   if (e.event_type == TOUCH_SWITCH_ON) {
     return timeout_next_state_;
   }
@@ -411,9 +417,39 @@ void OffState::leave_state() {}
 ///////////////////////////////////////////////////////
 // Implementation: AdjustBrightnessState
 ///////////////////////////////////////////////////////
-mdlib::State* AdjustBrightnessState::loop() { return (mdlib::State*)0; }
-mdlib::State* AdjustBrightnessState::handle_event(mdlib::Event e) { return (mdlib::State*)0; }
-void AdjustBrightnessState::enter_state() {}
-void AdjustBrightnessState::leave_state() {}
+mdlib::State* AdjustBrightnessState::loop() {
+  const byte MAX_B = 254;
+  const byte MIN_B = 1;
+  const unsigned long DELAY = 1000;
+  unsigned long elapsed = millis() - start_time_;
+  
+  if (elapsed > DELAY) {
+    byte b = Context::Get()->brightness();
+    b = b + direction_;
+    if (b >= MAX_B) {
+      direction_ = -1;
+      b = MAX_B;
+    }
+    else if (b <= MIN_B) {
+      direction_ = 1;
+      b = MIN_B;
+    }
+    Context::Get()->set_brightness(b);
+    Context::Get()->night_light()->setLevel(b);
+  }
+  return (mdlib::State*)0; 
+}
+
+mdlib::State* AdjustBrightnessState::handle_event(mdlib::Event e) {
+  if (e.event_type == TOUCH_SWITCH_OFF) {
+    return next_state_;
+  }
+  return (mdlib::State*)0; 
+}
+void AdjustBrightnessState::enter_state() {
+  Context::Get()->night_light()->setLevel(Context::Get()->brightness());
+}
+void AdjustBrightnessState::leave_state() {
+}
 
 } // namespace CampLamp
