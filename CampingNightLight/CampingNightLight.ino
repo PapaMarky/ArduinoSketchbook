@@ -60,7 +60,7 @@ class BatteryMonitor {
 
 class Context : public mdlib::StateContext {
   public:
-    Context() {};
+    Context() : brightness_(0.5) {};
     
     void setup();
     void update();
@@ -70,11 +70,15 @@ class Context : public mdlib::StateContext {
     mdlib::AnalogOutput* night_light() { return &night_light_; }
     mdlib::AnalogInput* photo_cell() { return &photo_cell_; }
     
+    void set_brightness(float b) { brightness_ = b; }
+    float brightness() { return brightness_; }
+    
   private:
     TouchSwitch touch_switch_;
     BatteryMonitor battery_monitor_;
     mdlib::AnalogOutput night_light_;
-    mdlib::AnalogInput photo_cell_;    
+    mdlib::AnalogInput photo_cell_;
+    float brightness_; // 0.0 - 1.0
 } context_;
 
 class OnState : public mdlib::State {
@@ -342,17 +346,65 @@ void Context::update() {
 ///////////////////////////////////////////////////////
 // Implementation: OnState
 ///////////////////////////////////////////////////////
-mdlib::State* OnState::loop() { return (mdlib::State*)0; }
-mdlib::State* OnState::handle_event(mdlib::Event e) { return (mdlib::State*)0; }
-void OnState::enter_state() {}
-void OnState::leave_state() {}
+mdlib::State* OnState::loop() {
+  const unsigned long ON_DELAY = 1000;
+  const int ON_THRESHOLD = 130;
+  unsigned long elapsed = millis() - start_time_;
+  
+  if (elapsed > ON_DELAY) {
+    int light = Context::Get()->photo_cell()->read();
+    if (light < ON_THRESHOLD) {
+      return next_state_;
+    }
+  }
+  
+  return (mdlib::State*)0; 
+}
+
+mdlib::State* OnState::handle_event(mdlib::Event e) {
+  if (e.event_type == TOUCH_SWITCH_ON) {
+    return timeout_next_state_;
+  }
+  return (mdlib::State*)0; 
+}
+
+void OnState::enter_state() {
+  Context::Get()->night_light()->setLevel(Context::Get()->brightness());
+}
+
+void OnState::leave_state() {
+}
 
 ///////////////////////////////////////////////////////
 // Implementation: OffState
 ///////////////////////////////////////////////////////
-mdlib::State* OffState::loop() { return (mdlib::State*)0; }
-mdlib::State* OffState::handle_event(mdlib::Event e) { return (mdlib::State*)0; }
-void OffState::enter_state() {}
+mdlib::State* OffState::loop() {
+  // TODO rewrite using narcoleptic delay
+  const unsigned long OFF_DELAY = 1000;
+  const int OFF_THRESHOLD = 190;
+  unsigned long elapsed = millis() - start_time_;
+  
+  if (elapsed > OFF_DELAY) {
+    int light = Context::Get()->photo_cell()->read();
+    if (light > OFF_THRESHOLD) {
+      return next_state_;
+    }
+  }
+  
+  return (mdlib::State*)0; 
+}
+
+mdlib::State* OffState::handle_event(mdlib::Event e) { 
+  if (e.event_type == TOUCH_SWITCH_ON) {
+    return timeout_next_state_;
+  }
+  return (mdlib::State*)0; 
+}
+
+void OffState::enter_state() {
+  Context::Get()->night_light()->setLevel(0.0f);
+}
+
 void OffState::leave_state() {}
 
 
