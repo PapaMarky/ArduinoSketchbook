@@ -44,6 +44,21 @@ class TouchSwitch : public mdlib::BaseIO {
     bool is_on_;
 };
 
+class BatteryMonitor {
+  public:
+    BatteryMonitor() : battery_is_low_(false) {
+      set_threshold(BATTERY_THRESHOLD_ON);
+    }
+    void setup();
+    void update();
+    void set_threshold(float t);
+  private:
+    mdlib::DigitalOutput battery_low_light_;
+    mdlib::AnalogInput battery_voltage_;
+    int threshold_;
+    bool battery_is_low_;
+};
+
 class Context : public mdlib::StateContext {
   public:
     Context() {};
@@ -55,8 +70,7 @@ class Context : public mdlib::StateContext {
     
   private:
     TouchSwitch touch_switch;
-    mdlib::DigitalOutput battery_low_light;
-    mdlib::AnalogInput battery_voltage;
+    BatteryMonitor battery_monitor;
     mdlib::AnalogOutput night_light;
     mdlib::AnalogInput photo_cell;    
 } context_;
@@ -263,17 +277,43 @@ void TouchSwitch::update() {
     mdlib::PostEvent(mdlib::Event((is_on_ ? TOUCH_SWITCH_ON : TOUCH_SWITCH_OFF), (int)this));
   }
 }
+///////////////////////////////////////////////////////
+// Implementation: BatteryMonitor
+///////////////////////////////////////////////////////
+void BatteryMonitor::setup() {
+  battery_low_light_.set_pin(LOW_BATTERY_LED);
+  battery_low_light_.setup();
+
+  battery_voltage_.set_pin(BATTERY);
+  battery_voltage_.setup();
+}
+
+void BatteryMonitor::update() {
+  battery_voltage_.update();
+  battery_low_light_.update();
+  
+  int level = battery_voltage_.read();
+  
+  bool new_battery_is_low = level < threshold_;
+  
+  if (new_battery_is_low != battery_is_low_) {
+    battery_is_low_ = new_battery_is_low;
+    if (battery_is_low)
+      battery_low_light_.TurnOn();
+    else
+      battery_low_light_.TurnOff();
+  }
+}
+
+void BatteryMonitor::set_threshold(float t) {
+  threshold_ = (int)(t * 1023.0);
+}
 
 ///////////////////////////////////////////////////////
 // Implementation: Context
 ///////////////////////////////////////////////////////
 void Context::setup() {
-  
-  battery_low_light.set_pin(LOW_BATTERY_LED);
-  battery_low_light.setup();
-
-  battery_voltage.set_pin(BATTERY);
-  battery_voltage.setup();
+  battery_monitor.setup();
   
   night_light.set_pin(NIGHT_LIGHT);
   night_light.setup();
@@ -286,8 +326,8 @@ void Context::setup() {
 }
 
 void Context::update() {
-  battery_voltage.update();
-  battery_low_light.update();
+  battery_monitor.update();
+  
   photo_cell.update();
   night_light.update();
   touch_switch.update();
