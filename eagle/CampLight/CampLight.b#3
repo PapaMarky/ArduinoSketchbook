@@ -113,6 +113,8 @@
 <hole x="59.69" y="59.69" drill="3.2"/>
 <hole x="59.69" y="3.81" drill="3.2"/>
 <hole x="3.81" y="3.81" drill="3.2"/>
+<text x="57.15" y="13.97" size="1.778" layer="51" rot="R90">Marky's House</text>
+<text x="60.96" y="13.97" size="1.778" layer="51" rot="R90">Camp-o-Light</text>
 </plain>
 <libraries>
 <library name="SparkFun-DigitalIC">
