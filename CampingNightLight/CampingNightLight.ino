@@ -32,7 +32,7 @@ enum Events {
 
 class TouchSwitch : public mdlib::BaseIO {
   public:
-    TouchSwitch() : cut_off_(5), is_on_(false) {};
+    TouchSwitch() : cut_off_(2), is_on_(false) {};
     virtual void setup() const;
     virtual void update();
     
@@ -248,7 +248,7 @@ void TouchSwitch::update() {
 
 //  Serial.print("* cycles: ");
 //  Serial.println(cycles);
-  bool new_is_on = cycles > cut_off_;
+  bool new_is_on = cycles >= cut_off_;
   
   if (is_on_ != new_is_on) {
     is_on_ = new_is_on;
