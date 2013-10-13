@@ -1723,14 +1723,6 @@ OSCIlLATOR</text>
 <wire x1="144.78" y1="127" x2="144.78" y2="119.38" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$9" class="0">
-<segment>
-<pinref part="Q7" gate="G1" pin="B"/>
-<pinref part="R17" gate="G$1" pin="2"/>
-<wire x1="175.26" y1="127" x2="182.88" y2="127" width="0.1524" layer="91"/>
-<wire x1="182.88" y1="127" x2="182.88" y2="111.76" width="0.1524" layer="91"/>
-</segment>
-</net>
 </nets>
 </sheet>
 </sheets>
