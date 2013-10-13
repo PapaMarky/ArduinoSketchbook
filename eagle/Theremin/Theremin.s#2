@@ -1564,7 +1564,6 @@ Standard 0603 ceramic capacitor, and 0.1" leaded capacitor.</description>
 <part name="Q6" library="transistor" deviceset="2N3904" device=""/>
 <part name="R16" library="SparkFun-Passives" deviceset="RESISTOR" device="EZ" value="2.2K"/>
 <part name="P-3" library="supply1" deviceset="-12V" device=""/>
-<part name="GND3" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -1595,7 +1594,6 @@ OSCIlLATOR</text>
 <instance part="Q6" gate="G1" x="152.4" y="127"/>
 <instance part="R16" gate="G$1" x="162.56" y="111.76" rot="R90"/>
 <instance part="P-3" gate="1" x="162.56" y="101.6"/>
-<instance part="GND3" gate="1" x="144.78" y="106.68"/>
 </instances>
 <busses>
 </busses>
@@ -1673,11 +1671,6 @@ OSCIlLATOR</text>
 <pinref part="GND2" gate="1" pin="GND"/>
 <wire x1="198.12" y1="101.6" x2="198.12" y2="99.06" width="0.1524" layer="91"/>
 </segment>
-<segment>
-<pinref part="R15" gate="G$1" pin="1"/>
-<pinref part="GND3" gate="1" pin="GND"/>
-<wire x1="144.78" y1="111.76" x2="144.78" y2="109.22" width="0.1524" layer="91"/>
-</segment>
 </net>
 <net name="N$7" class="0">
 <segment>
@@ -1721,14 +1714,6 @@ OSCIlLATOR</text>
 <pinref part="Q6" gate="G1" pin="B"/>
 <wire x1="149.86" y1="127" x2="144.78" y2="127" width="0.1524" layer="91"/>
 <wire x1="144.78" y1="127" x2="144.78" y2="119.38" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$9" class="0">
-<segment>
-<pinref part="Q7" gate="G1" pin="B"/>
-<pinref part="R17" gate="G$1" pin="2"/>
-<wire x1="175.26" y1="127" x2="182.88" y2="127" width="0.1524" layer="91"/>
-<wire x1="182.88" y1="127" x2="182.88" y2="111.76" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
