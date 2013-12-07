@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
@@ -3670,6 +3670,15 @@ naming: grid - package width</description>
 <text x="3.175" y="0.635" size="0.4064" layer="25" ratio="10">&gt;NAME</text>
 <text x="3.175" y="-1.27" size="0.4064" layer="27" ratio="10">&gt;VALUE</text>
 </package>
+<package name="10MM-RADIAL-CPOL">
+<description>1cm Diameter Polarized Radial Capacitor</description>
+<circle x="0" y="0" radius="9" width="0.127" layer="21"/>
+<pad name="P$1" x="-3.5" y="0" drill="1.1" shape="square"/>
+<pad name="P$2" x="3.5" y="0" drill="1.1"/>
+<text x="-7.5" y="-1.25" size="2.54" layer="21">+</text>
+<text x="0" y="-4.25" size="1.778" layer="25" align="bottom-center">&gt;NAME</text>
+<text x="0" y="3.5" size="1.778" layer="27" align="bottom-center">&gt;VALUE</text>
+</package>
 </packages>
 <symbols>
 <symbol name="VARIABLE-INDUCTOR-2">
@@ -3729,6 +3738,18 @@ naming: grid - package width</description>
 <text x="-3.81" y="0" size="1.27" layer="95" rot="R90" align="center">VIN</text>
 <text x="3.81" y="0" size="1.27" layer="95" rot="R90" align="center">VOUT</text>
 </symbol>
+<symbol name="CAP_POL">
+<wire x1="-2.54" y1="0" x2="2.54" y2="0" width="0.254" layer="94"/>
+<wire x1="0" y1="-1.016" x2="0" y2="-2.54" width="0.1524" layer="94"/>
+<wire x1="0" y1="-1" x2="2.4892" y2="-1.8542" width="0.254" layer="94" curve="-37.878202" cap="flat"/>
+<wire x1="-2.4669" y1="-1.8504" x2="0" y2="-1.0161" width="0.254" layer="94" curve="-37.376341" cap="flat"/>
+<text x="1.016" y="0.635" size="1.778" layer="95">&gt;NAME</text>
+<text x="1.016" y="-4.191" size="1.778" layer="96">&gt;VALUE</text>
+<rectangle x1="-2.253" y1="0.668" x2="-1.364" y2="0.795" layer="94"/>
+<rectangle x1="-1.872" y1="0.287" x2="-1.745" y2="1.176" layer="94"/>
+<pin name="+" x="0" y="2.54" visible="off" length="short" direction="pas" swaplevel="1" rot="R270"/>
+<pin name="-" x="0" y="-5.08" visible="off" length="short" direction="pas" swaplevel="1" rot="R90"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="SLOT-TEN-SIMPLE" prefix="L" uservalue="yes">
@@ -3765,7 +3786,7 @@ naming: grid - package width</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="LM79L12">
+<deviceset name="LM79L12" prefix="U">
 <description>-12V regulator</description>
 <gates>
 <gate name="G$1" symbol="V-REG" x="0" y="0"/>
@@ -3783,7 +3804,7 @@ naming: grid - package width</description>
 </device>
 </devices>
 </deviceset>
-<deviceset name="LM78L12">
+<deviceset name="LM78L12" prefix="U">
 <description>LM78LXX Series 3-Terminal Positive Regulators</description>
 <gates>
 <gate name="G$1" symbol="V-REG-2" x="0" y="0"/>
@@ -3794,6 +3815,23 @@ naming: grid - package width</description>
 <connect gate="G$1" pin="GND" pad="2"/>
 <connect gate="G$1" pin="VIN" pad="1"/>
 <connect gate="G$1" pin="VOUT" pad="3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="1CM-RADIAL-CAP-POL" prefix="C" uservalue="yes">
+<description>1cm Radial Polarized Capacitor</description>
+<gates>
+<gate name="G$1" symbol="CAP_POL" x="-2.54" y="2.54"/>
+</gates>
+<devices>
+<device name="" package="10MM-RADIAL-CPOL">
+<connects>
+<connect gate="G$1" pin="+" pad="P$1"/>
+<connect gate="G$1" pin="-" pad="P$2"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -3916,7 +3954,11 @@ general purpose rectifier, 1 A</description>
 <part name="GND7" library="supply1" deviceset="GND" device=""/>
 <part name="U2" library="marky-parts" deviceset="LM79L12" device=""/>
 <part name="U1" library="marky-parts" deviceset="LM78L12" device=""/>
-<part name="D1" library="diode" deviceset="1N4004" device=""/>
+<part name="D2" library="diode" deviceset="1N4004" device=""/>
+<part name="C19" library="marky-parts" deviceset="1CM-RADIAL-CAP-POL" device="" value="2200uF"/>
+<part name="C20" library="marky-parts" deviceset="1CM-RADIAL-CAP-POL" device="" value="2200uF"/>
+<part name="C30" library="SparkFun-Capacitors" deviceset="CAP" device="_" value=".47uF"/>
+<part name="C29" library="SparkFun-Capacitors" deviceset="CAP" device="_" value=".47uF"/>
 </parts>
 <sheets>
 <sheet>
@@ -3962,11 +4004,15 @@ OSCIlLATOR</text>
 <instance part="GND5" gate="1" x="142.24" y="120.65"/>
 <instance part="GND6" gate="1" x="157.48" y="120.65"/>
 <instance part="C14" gate="G$1" x="170.18" y="101.6"/>
-<instance part="D3" gate="1" x="17.78" y="43.18" rot="R180"/>
-<instance part="GND7" gate="1" x="22.86" y="55.88"/>
-<instance part="U2" gate="G$1" x="30.48" y="43.18"/>
-<instance part="U1" gate="G$1" x="30.48" y="76.2"/>
-<instance part="D1" gate="1" x="12.7" y="76.2"/>
+<instance part="D3" gate="1" x="12.7" y="43.18" rot="R180"/>
+<instance part="GND7" gate="1" x="68.58" y="58.42"/>
+<instance part="U2" gate="G$1" x="40.64" y="43.18"/>
+<instance part="U1" gate="G$1" x="40.64" y="76.2"/>
+<instance part="D2" gate="1" x="12.7" y="76.2"/>
+<instance part="C19" gate="G$1" x="17.78" y="68.58"/>
+<instance part="C20" gate="G$1" x="17.78" y="53.34"/>
+<instance part="C30" gate="G$1" x="27.94" y="66.04"/>
+<instance part="C29" gate="G$1" x="27.94" y="50.8"/>
 </instances>
 <busses>
 </busses>
@@ -4088,13 +4134,26 @@ OSCIlLATOR</text>
 </segment>
 <segment>
 <pinref part="U2" gate="G$1" pin="GND"/>
-<wire x1="30.48" y1="50.8" x2="30.48" y2="60.96" width="0.1524" layer="91"/>
-<wire x1="30.48" y1="60.96" x2="22.86" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="40.64" y1="50.8" x2="40.64" y2="60.96" width="0.1524" layer="91"/>
 <pinref part="GND7" gate="1" pin="GND"/>
-<wire x1="22.86" y1="60.96" x2="22.86" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="40.64" y1="60.96" x2="68.58" y2="60.96" width="0.1524" layer="91"/>
 <pinref part="U1" gate="G$1" pin="GND"/>
-<wire x1="30.48" y1="68.58" x2="30.48" y2="60.96" width="0.1524" layer="91"/>
-<junction x="30.48" y="60.96"/>
+<wire x1="40.64" y1="68.58" x2="40.64" y2="60.96" width="0.1524" layer="91"/>
+<junction x="40.64" y="60.96"/>
+<pinref part="C20" gate="G$1" pin="+"/>
+<pinref part="C19" gate="G$1" pin="-"/>
+<wire x1="17.78" y1="55.88" x2="17.78" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="60.96" x2="17.78" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="40.64" y1="60.96" x2="27.94" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="60.96" x2="17.78" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="60.96" x2="2.54" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="60.96" x2="2.54" y2="27.94" width="0.1524" layer="91"/>
+<junction x="17.78" y="60.96"/>
+<pinref part="C29" gate="G$1" pin="1"/>
+<pinref part="C30" gate="G$1" pin="2"/>
+<wire x1="27.94" y1="55.88" x2="27.94" y2="60.96" width="0.1524" layer="91"/>
+<junction x="27.94" y="60.96"/>
+<wire x1="27.94" y1="60.96" x2="27.94" y2="63.5" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$7" class="0">
@@ -4184,14 +4243,39 @@ OSCIlLATOR</text>
 <segment>
 <pinref part="U2" gate="G$1" pin="VIN"/>
 <pinref part="D3" gate="1" pin="A"/>
-<wire x1="22.86" y1="43.18" x2="20.32" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="43.18" x2="27.94" y2="43.18" width="0.1524" layer="91"/>
+<pinref part="C20" gate="G$1" pin="-"/>
+<wire x1="27.94" y1="43.18" x2="17.78" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="43.18" x2="15.24" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="48.26" x2="17.78" y2="43.18" width="0.1524" layer="91"/>
+<junction x="17.78" y="43.18"/>
+<pinref part="C29" gate="G$1" pin="2"/>
+<wire x1="27.94" y1="43.18" x2="27.94" y2="48.26" width="0.1524" layer="91"/>
+<junction x="27.94" y="43.18"/>
 </segment>
 </net>
 <net name="N$13" class="0">
 <segment>
-<pinref part="D1" gate="1" pin="C"/>
+<pinref part="D2" gate="1" pin="C"/>
 <pinref part="U1" gate="G$1" pin="VIN"/>
-<wire x1="15.24" y1="76.2" x2="22.86" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="15.24" y1="76.2" x2="17.78" y2="76.2" width="0.1524" layer="91"/>
+<pinref part="C19" gate="G$1" pin="+"/>
+<wire x1="17.78" y1="76.2" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="76.2" x2="33.02" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="71.12" x2="17.78" y2="76.2" width="0.1524" layer="91"/>
+<junction x="17.78" y="76.2"/>
+<pinref part="C30" gate="G$1" pin="1"/>
+<wire x1="27.94" y1="71.12" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
+<junction x="27.94" y="76.2"/>
+</segment>
+</net>
+<net name="N$14" class="0">
+<segment>
+<pinref part="D3" gate="1" pin="C"/>
+<wire x1="10.16" y1="43.18" x2="5.08" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="43.18" x2="5.08" y2="76.2" width="0.1524" layer="91"/>
+<pinref part="D2" gate="1" pin="A"/>
+<wire x1="5.08" y1="76.2" x2="10.16" y2="76.2" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
