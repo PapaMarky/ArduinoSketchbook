@@ -326,6 +326,18 @@
 <pin name="GND" x="0" y="-7.62" visible="off" length="short" direction="in" rot="R90"/>
 <pin name="OUT" x="7.62" y="0" visible="off" length="short" direction="out" rot="R180"/>
 </symbol>
+<symbol name="V-REG-2">
+<wire x1="-5.08" y1="-5.08" x2="5.08" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="5.08" y1="-5.08" x2="5.08" y2="2.54" width="0.254" layer="94"/>
+<wire x1="5.08" y1="2.54" x2="-5.08" y2="2.54" width="0.254" layer="94"/>
+<wire x1="-5.08" y1="2.54" x2="-5.08" y2="-5.08" width="0.254" layer="94"/>
+<pin name="VIN" x="-7.62" y="0" visible="pad" length="short" direction="in"/>
+<pin name="GND" x="0" y="-7.62" visible="pad" length="short" direction="in" rot="R90"/>
+<pin name="VOUT" x="7.62" y="0" visible="pad" length="short" direction="out" rot="R180"/>
+<text x="0" y="-3.81" size="1.27" layer="95" align="center">GND</text>
+<text x="-3.81" y="0" size="1.27" layer="95" rot="R90" align="center">VIN</text>
+<text x="3.81" y="0" size="1.27" layer="95" rot="R90" align="center">VOUT</text>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="SLOT-TEN">
@@ -427,13 +439,36 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 </device>
 </devices>
 </deviceset>
-<deviceset name="LM79L12">
+<deviceset name="LM79L12" prefix="U">
 <description>-12V regulator</description>
 <gates>
 <gate name="G$1" symbol="V-REG" x="0" y="0"/>
 </gates>
 <devices>
 <device name="" package="TO-92">
+<connects>
+<connect gate="G$1" pin="GND" pad="3"/>
+<connect gate="G$1" pin="VIN" pad="2"/>
+<connect gate="G$1" pin="VOUT" pad="1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="LM78L12" prefix="U">
+<description>LM78LXX Series 3-Terminal Positive Regulators</description>
+<gates>
+<gate name="G$1" symbol="V-REG-2" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="TO-92">
+<connects>
+<connect gate="G$1" pin="GND" pad="2"/>
+<connect gate="G$1" pin="VIN" pad="1"/>
+<connect gate="G$1" pin="VOUT" pad="3"/>
+</connects>
 <technologies>
 <technology name=""/>
 </technologies>
