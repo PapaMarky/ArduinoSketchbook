@@ -830,6 +830,22 @@
 <wire x1="-7.62" y1="25.4" x2="-7.62" y2="-25.4" width="0.254" layer="94"/>
 <wire x1="-7.62" y1="-25.4" x2="7.62" y2="-25.4" width="0.254" layer="94"/>
 <wire x1="7.62" y1="-25.4" x2="7.62" y2="25.4" width="0.254" layer="94"/>
+<pin name="P$1" x="-12.7" y="12.7" length="middle" direction="pwr"/>
+<pin name="P$2" x="-12.7" y="20.32" length="middle" direction="pwr"/>
+<pin name="P$3" x="-12.7" y="17.78" length="middle" direction="pwr"/>
+<pin name="P$4" x="-12.7" y="22.86" length="middle" direction="pwr"/>
+<pin name="P$5" x="-12.7" y="7.62" length="middle" direction="pwr"/>
+<pin name="P$6" x="-12.7" y="-12.7" length="middle" direction="pwr"/>
+<pin name="P$7" x="-12.7" y="5.08" length="middle" direction="pwr"/>
+<pin name="P$8" x="-12.7" y="2.54" length="middle" direction="pwr"/>
+<pin name="P$9" x="12.7" y="2.54" length="middle" direction="pwr" rot="R180"/>
+<pin name="P$10" x="12.7" y="5.08" length="middle" direction="pwr" rot="R180"/>
+<pin name="P$11" x="12.7" y="-12.7" length="middle" direction="pwr" rot="R180"/>
+<pin name="P$12" x="12.7" y="7.62" length="middle" direction="pwr" rot="R180"/>
+<pin name="P$13" x="12.7" y="22.86" length="middle" direction="pwr" rot="R180"/>
+<pin name="P$14" x="12.7" y="17.78" length="middle" direction="pwr" rot="R180"/>
+<pin name="P$15" x="12.7" y="20.32" length="middle" direction="pwr" rot="R180"/>
+<pin name="P$16" x="12.7" y="12.7" length="middle" direction="pwr" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>

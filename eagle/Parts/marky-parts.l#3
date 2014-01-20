@@ -835,14 +835,14 @@
 <pin name="P$2" x="-12.7" y="15.24" length="middle" direction="in"/>
 <pin name="P$3" x="-12.7" y="12.7" length="middle" direction="in"/>
 <pin name="P$4" x="-12.7" y="17.78" length="middle" direction="in"/>
-<pin name="P$5" x="-12.7" y="2.54" length="middle" direction="out"/>
+<pin name="OUT-A" x="-12.7" y="2.54" length="middle" direction="out"/>
 <pin name="V-" x="0" y="-15.24" length="middle" direction="pwr" rot="R90"/>
-<pin name="P$7" x="-12.7" y="0" length="middle" direction="in"/>
-<pin name="P$8" x="-12.7" y="-2.54" length="middle" direction="out"/>
-<pin name="P$9" x="12.7" y="-2.54" length="middle" direction="out" rot="R180"/>
-<pin name="P$10" x="12.7" y="0" length="middle" direction="in" rot="R180"/>
+<pin name="B-IN-A" x="-12.7" y="0" length="middle" direction="in"/>
+<pin name="B-OUT-A" x="-12.7" y="-2.54" length="middle" direction="out"/>
+<pin name="B-OUT-B" x="12.7" y="-2.54" length="middle" direction="out" rot="R180"/>
+<pin name="B-IN-B" x="12.7" y="0" length="middle" direction="in" rot="R180"/>
 <pin name="V+" x="0" y="30.48" length="middle" direction="pwr" rot="R270"/>
-<pin name="P$12" x="12.7" y="2.54" length="middle" direction="out" rot="R180"/>
+<pin name="OUT-B" x="12.7" y="2.54" length="middle" direction="out" rot="R180"/>
 <pin name="P$13" x="12.7" y="17.78" length="middle" direction="in" rot="R180"/>
 <pin name="P$14" x="12.7" y="12.7" length="middle" direction="in" rot="R180"/>
 <pin name="P$15" x="12.7" y="15.24" length="middle" direction="in" rot="R180"/>
@@ -1214,9 +1214,13 @@ Operational Transconductance Amplifiers with Linearizing Diodes and Buffers</des
 <devices>
 <device name="" package="DIL16">
 <connects>
+<connect gate="G$1" pin="B-IN-A" pad="7"/>
+<connect gate="G$1" pin="B-IN-B" pad="10"/>
+<connect gate="G$1" pin="B-OUT-A" pad="8"/>
+<connect gate="G$1" pin="B-OUT-B" pad="9"/>
+<connect gate="G$1" pin="OUT-A" pad="5"/>
+<connect gate="G$1" pin="OUT-B" pad="12"/>
 <connect gate="G$1" pin="P$1" pad="1"/>
-<connect gate="G$1" pin="P$10" pad="10"/>
-<connect gate="G$1" pin="P$12" pad="12"/>
 <connect gate="G$1" pin="P$13" pad="13"/>
 <connect gate="G$1" pin="P$14" pad="14"/>
 <connect gate="G$1" pin="P$15" pad="15"/>
@@ -1224,10 +1228,6 @@ Operational Transconductance Amplifiers with Linearizing Diodes and Buffers</des
 <connect gate="G$1" pin="P$2" pad="2"/>
 <connect gate="G$1" pin="P$3" pad="3"/>
 <connect gate="G$1" pin="P$4" pad="4"/>
-<connect gate="G$1" pin="P$5" pad="5"/>
-<connect gate="G$1" pin="P$7" pad="7"/>
-<connect gate="G$1" pin="P$8" pad="8"/>
-<connect gate="G$1" pin="P$9" pad="9"/>
 <connect gate="G$1" pin="V+" pad="11"/>
 <connect gate="G$1" pin="V-" pad="6"/>
 </connects>

@@ -825,6 +825,12 @@
 <pin name="P$15" x="7.62" y="0" length="short" direction="pwr"/>
 <pin name="P$16" x="15.24" y="-12.7" length="short" direction="pwr" rot="R90"/>
 </symbol>
+<symbol name="DUAL-OP-AMP">
+<wire x1="-25.4" y1="7.62" x2="-25.4" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="-25.4" y1="-7.62" x2="25.4" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="25.4" y1="-7.62" x2="25.4" y2="7.62" width="0.254" layer="94"/>
+<wire x1="25.4" y1="7.62" x2="-25.4" y2="7.62" width="0.254" layer="94"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="SLOT-TEN">

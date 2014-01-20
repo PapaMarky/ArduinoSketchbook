@@ -831,10 +831,10 @@
 <wire x1="-7.62" y1="25.4" x2="-7.62" y2="-10.16" width="0.254" layer="94"/>
 <wire x1="-7.62" y1="-10.16" x2="7.62" y2="-10.16" width="0.254" layer="94"/>
 <wire x1="7.62" y1="-10.16" x2="7.62" y2="25.4" width="0.254" layer="94"/>
-<pin name="P$1" x="-12.7" y="7.62" length="middle" direction="in"/>
-<pin name="P$2" x="-12.7" y="15.24" length="middle" direction="in"/>
-<pin name="P$3" x="-12.7" y="12.7" length="middle" direction="in"/>
-<pin name="P$4" x="-12.7" y="17.78" length="middle" direction="in"/>
+<pin name="BIAS-IN-A" x="-12.7" y="7.62" length="middle" direction="in"/>
+<pin name="DIODE-BIAS-A" x="-12.7" y="15.24" length="middle" direction="in"/>
+<pin name="IN-PLUS-A" x="-12.7" y="12.7" length="middle" direction="in"/>
+<pin name="IN-MINUS-A" x="-12.7" y="17.78" length="middle" direction="in"/>
 <pin name="OUT-A" x="-12.7" y="2.54" length="middle" direction="out"/>
 <pin name="V-" x="0" y="-15.24" length="middle" direction="pwr" rot="R90"/>
 <pin name="B-IN-A" x="-12.7" y="0" length="middle" direction="in"/>
@@ -843,10 +843,10 @@
 <pin name="B-IN-B" x="12.7" y="0" length="middle" direction="in" rot="R180"/>
 <pin name="V+" x="0" y="30.48" length="middle" direction="pwr" rot="R270"/>
 <pin name="OUT-B" x="12.7" y="2.54" length="middle" direction="out" rot="R180"/>
-<pin name="P$13" x="12.7" y="17.78" length="middle" direction="in" rot="R180"/>
-<pin name="P$14" x="12.7" y="12.7" length="middle" direction="in" rot="R180"/>
-<pin name="P$15" x="12.7" y="15.24" length="middle" direction="in" rot="R180"/>
-<pin name="P$16" x="12.7" y="7.62" length="middle" direction="in" rot="R180"/>
+<pin name="IN-MINUS-B" x="12.7" y="17.78" length="middle" direction="in" rot="R180"/>
+<pin name="IN-PLUS-B" x="12.7" y="12.7" length="middle" direction="in" rot="R180"/>
+<pin name="DIODE-BIAS-B" x="12.7" y="15.24" length="middle" direction="in" rot="R180"/>
+<pin name="BIAS-IN-B" x="12.7" y="7.62" length="middle" direction="in" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -1218,16 +1218,16 @@ Operational Transconductance Amplifiers with Linearizing Diodes and Buffers</des
 <connect gate="G$1" pin="B-IN-B" pad="10"/>
 <connect gate="G$1" pin="B-OUT-A" pad="8"/>
 <connect gate="G$1" pin="B-OUT-B" pad="9"/>
+<connect gate="G$1" pin="BIAS-IN-A" pad="1"/>
+<connect gate="G$1" pin="BIAS-IN-B" pad="16"/>
+<connect gate="G$1" pin="DIODE-BIAS-A" pad="2"/>
+<connect gate="G$1" pin="DIODE-BIAS-B" pad="15"/>
+<connect gate="G$1" pin="IN-MINUS-A" pad="4"/>
+<connect gate="G$1" pin="IN-MINUS-B" pad="13"/>
+<connect gate="G$1" pin="IN-PLUS-A" pad="3"/>
+<connect gate="G$1" pin="IN-PLUS-B" pad="14"/>
 <connect gate="G$1" pin="OUT-A" pad="5"/>
 <connect gate="G$1" pin="OUT-B" pad="12"/>
-<connect gate="G$1" pin="P$1" pad="1"/>
-<connect gate="G$1" pin="P$13" pad="13"/>
-<connect gate="G$1" pin="P$14" pad="14"/>
-<connect gate="G$1" pin="P$15" pad="15"/>
-<connect gate="G$1" pin="P$16" pad="16"/>
-<connect gate="G$1" pin="P$2" pad="2"/>
-<connect gate="G$1" pin="P$3" pad="3"/>
-<connect gate="G$1" pin="P$4" pad="4"/>
 <connect gate="G$1" pin="V+" pad="11"/>
 <connect gate="G$1" pin="V-" pad="6"/>
 </connects>

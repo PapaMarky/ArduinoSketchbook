@@ -7008,10 +7008,10 @@ TUNING</text>
 <instance part="R29" gate="G$1" x="121.92" y="52.07"/>
 <instance part="R32" gate="G$1" x="116.84" y="60.96" rot="R90"/>
 <instance part="C25" gate="G$1" x="90.17" y="62.23" rot="R180"/>
-<instance part="R33" gate="G$1" x="90.17" y="53.34" rot="R270"/>
-<instance part="C26" gate="G$1" x="81.28" y="46.99" rot="R90"/>
-<instance part="R34" gate="G$1" x="82.55" y="39.37" rot="R180"/>
-<instance part="GND16" gate="1" x="73.66" y="38.1"/>
+<instance part="R33" gate="G$1" x="87.63" y="50.8" rot="R270"/>
+<instance part="C26" gate="G$1" x="81.28" y="35.56" rot="R90"/>
+<instance part="R34" gate="G$1" x="82.55" y="27.94" rot="R180"/>
+<instance part="GND16" gate="1" x="73.66" y="26.67"/>
 <instance part="C24" gate="G$1" x="123.19" y="73.66" smashed="yes" rot="R90">
 <attribute name="NAME" x="120.65" y="73.66" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="127" y="71.12" size="1.778" layer="96" rot="R180"/>
@@ -7291,15 +7291,15 @@ TUNING</text>
 </segment>
 <segment>
 <pinref part="C26" gate="G$1" pin="1"/>
-<wire x1="77.47" y1="46.99" x2="76.2" y2="46.99" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="46.99" x2="76.2" y2="44.45" width="0.1524" layer="91"/>
+<wire x1="77.47" y1="35.56" x2="76.2" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="35.56" x2="76.2" y2="33.02" width="0.1524" layer="91"/>
 <pinref part="R34" gate="G$1" pin="2"/>
-<wire x1="76.2" y1="44.45" x2="76.2" y2="39.37" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="39.37" x2="77.47" y2="39.37" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="44.45" x2="73.66" y2="44.45" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="44.45" x2="73.66" y2="40.64" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="33.02" x2="76.2" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="27.94" x2="77.47" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="33.02" x2="73.66" y2="33.02" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="33.02" x2="73.66" y2="29.21" width="0.1524" layer="91"/>
 <pinref part="GND16" gate="1" pin="GND"/>
-<junction x="76.2" y="44.45"/>
+<junction x="76.2" y="33.02"/>
 </segment>
 <segment>
 <pinref part="R31" gate="G$1" pin="1"/>
@@ -7784,22 +7784,22 @@ TUNING</text>
 <segment>
 <pinref part="R33" gate="G$1" pin="1"/>
 <pinref part="C25" gate="G$1" pin="+"/>
-<wire x1="90.17" y1="58.42" x2="90.17" y2="59.69" width="0.1524" layer="91"/>
+<wire x1="87.63" y1="55.88" x2="90.17" y2="59.69" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$31" class="0">
 <segment>
 <pinref part="R33" gate="G$1" pin="2"/>
 <pinref part="JP2" gate="G$1" pin="10"/>
-<wire x1="90.17" y1="48.26" x2="90.17" y2="46.99" width="0.1524" layer="91"/>
+<wire x1="87.63" y1="45.72" x2="90.17" y2="35.56" width="0.1524" layer="91"/>
 <pinref part="C26" gate="G$1" pin="2"/>
-<wire x1="90.17" y1="46.99" x2="90.17" y2="39.37" width="0.1524" layer="91"/>
-<wire x1="90.17" y1="39.37" x2="90.17" y2="12.7" width="0.1524" layer="91"/>
-<wire x1="85.09" y1="46.99" x2="90.17" y2="46.99" width="0.1524" layer="91"/>
+<wire x1="90.17" y1="35.56" x2="90.17" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="90.17" y1="27.94" x2="90.17" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="85.09" y1="35.56" x2="90.17" y2="35.56" width="0.1524" layer="91"/>
 <pinref part="R34" gate="G$1" pin="1"/>
-<wire x1="87.63" y1="39.37" x2="90.17" y2="39.37" width="0.1524" layer="91"/>
-<junction x="90.17" y="46.99"/>
-<junction x="90.17" y="39.37"/>
+<wire x1="87.63" y1="27.94" x2="90.17" y2="27.94" width="0.1524" layer="91"/>
+<junction x="90.17" y="35.56"/>
+<junction x="90.17" y="27.94"/>
 </segment>
 </net>
 <net name="N$32" class="0">
