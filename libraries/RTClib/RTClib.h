@@ -1,7 +1,8 @@
-#ifndef RTC_LIB_H
-#define RTC_LIB_H
 // Code by JeeLabs http://news.jeelabs.org/code/
 // Released to the public domain! Enjoy!
+
+#ifndef _RTCLIB_H_
+#define _RTCLIB_H_
 
 // Simple general-purpose date/time class (no TZ / DST / leap second handling!)
 class DateTime {
@@ -30,7 +31,7 @@ protected:
 // RTC based on the DS1307 chip connected via I2C and the Wire library
 class RTC_DS1307 {
 public:
-  static uint8_t begin(void);
+    static uint8_t begin(void);
     static void adjust(const DateTime& dt);
     uint8_t isrunning(void);
     static DateTime now();
@@ -48,4 +49,4 @@ protected:
     static long offset;
 };
 
-#endif //  RTC_LIB_H
+#endif // _RTCLIB_H_
