@@ -7476,6 +7476,10 @@ AMPLIFIER</text>
 OSCILLATOR</text>
 <text x="118.11" y="168.91" size="1.778" layer="91">PITCH
 TUNING</text>
+<text x="40.64" y="40.64" size="1.778" layer="91" align="center">U1</text>
+<text x="40.64" y="7.62" size="1.778" layer="91" align="center">U2</text>
+<text x="40.64" y="44.45" size="1.778" layer="95" align="center">LM78L12</text>
+<text x="40.64" y="3.81" size="1.778" layer="95" align="center">LM79L12</text>
 </plain>
 <instances>
 <instance part="Q8" gate="G1" x="224.79" y="182.88" rot="MR0"/>
