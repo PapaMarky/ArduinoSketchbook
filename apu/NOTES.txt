@@ -1,0 +1,30 @@
+
+
+Atmega + clock, etc
+
+6 cathode (-) common RGB LEDs - use shift registers
+18 resistors (to match the leds)
+3 shift registers
+6 momentary switches (use lighted buttons from SparkFun?)
+buzzer
+7 seg LED display (one for score, one for time? Use LCD?)
+
+Select difficulty (?)
+
+Press START button  (MOM-OFF-MOM switch, next / previous state)
+timer starts - also display which pattern: 1_:01 
+buttons light in pattern
+press NEXT button when ready for next pattern (3 patterns)
+
+When all patterns accepted, count down 3 - 2 - 1 - 0 (beep beep beep bong)
+
+Timer starts counting down.
+
+When user pushes wrong pattern, harsh tone plays - blink incorrect buttons?
+
+When user pushes correct pattern, pleasant tone plays, advance to next pattern.
+
+If count down timer reaches zero : Long, harsh buzzer -- score?
+
+If all three patterns entered correctly, ding-ding-ding-ding-ding with flashing score.
+
