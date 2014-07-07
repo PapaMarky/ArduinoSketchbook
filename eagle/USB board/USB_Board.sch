@@ -2829,12 +2829,12 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 <part name="SUPPLY4" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="R1" library="SparkFun-Resistors" deviceset="10KOHM1/6W5%(PTH)" device="KIT"/>
 <part name="R2" library="SparkFun-Resistors" deviceset="10KOHM1/6W5%(PTH)" device="KIT"/>
-<part name="LED1" library="SparkFun-LED" deviceset="LED" device="5MM"/>
-<part name="LED2" library="SparkFun-LED" deviceset="LED" device="5MM"/>
+<part name="TX" library="SparkFun-LED" deviceset="LED" device="5MM"/>
+<part name="RX" library="SparkFun-LED" deviceset="LED" device="5MM"/>
 <part name="SUPPLY5" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="SUPPLY6" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="R3" library="SparkFun-Resistors" deviceset="10KOHM1/6W5%(PTH)" device="KIT"/>
-<part name="LED3" library="SparkFun-LED" deviceset="LED" device="5MM"/>
+<part name="PWR" library="SparkFun-LED" deviceset="LED" device="5MM"/>
 <part name="SUPPLY7" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="GND6" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 </parts>
@@ -2868,12 +2868,12 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 <instance part="SUPPLY4" gate="G$1" x="162.56" y="142.24"/>
 <instance part="R1" gate="G$1" x="124.46" y="127" rot="R90"/>
 <instance part="R2" gate="G$1" x="132.08" y="127" rot="R90"/>
-<instance part="LED1" gate="G$1" x="124.46" y="139.7"/>
-<instance part="LED2" gate="G$1" x="132.08" y="139.7"/>
+<instance part="TX" gate="G$1" x="124.46" y="139.7"/>
+<instance part="RX" gate="G$1" x="132.08" y="139.7"/>
 <instance part="SUPPLY5" gate="G$1" x="124.46" y="144.78"/>
 <instance part="SUPPLY6" gate="G$1" x="132.08" y="144.78"/>
 <instance part="R3" gate="G$1" x="198.12" y="127" rot="R90"/>
-<instance part="LED3" gate="G$1" x="198.12" y="139.7"/>
+<instance part="PWR" gate="G$1" x="198.12" y="139.7"/>
 <instance part="SUPPLY7" gate="G$1" x="198.12" y="144.78"/>
 <instance part="GND6" gate="1" x="198.12" y="116.84"/>
 </instances>
@@ -2996,17 +2996,17 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 <wire x1="162.56" y1="134.62" x2="162.56" y2="142.24" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="LED1" gate="G$1" pin="A"/>
+<pinref part="TX" gate="G$1" pin="A"/>
 <pinref part="SUPPLY5" gate="G$1" pin="5V"/>
 <wire x1="124.46" y1="142.24" x2="124.46" y2="144.78" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="LED2" gate="G$1" pin="A"/>
+<pinref part="RX" gate="G$1" pin="A"/>
 <pinref part="SUPPLY6" gate="G$1" pin="5V"/>
 <wire x1="132.08" y1="142.24" x2="132.08" y2="144.78" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="LED3" gate="G$1" pin="A"/>
+<pinref part="PWR" gate="G$1" pin="A"/>
 <pinref part="SUPPLY7" gate="G$1" pin="5V"/>
 <wire x1="198.12" y1="142.24" x2="198.12" y2="144.78" width="0.1524" layer="91"/>
 </segment>
@@ -3079,21 +3079,21 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 </net>
 <net name="N$15" class="0">
 <segment>
-<pinref part="LED1" gate="G$1" pin="C"/>
+<pinref part="TX" gate="G$1" pin="C"/>
 <pinref part="R1" gate="G$1" pin="2"/>
 <wire x1="124.46" y1="134.62" x2="124.46" y2="132.08" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$16" class="0">
 <segment>
-<pinref part="LED2" gate="G$1" pin="C"/>
+<pinref part="RX" gate="G$1" pin="C"/>
 <pinref part="R2" gate="G$1" pin="2"/>
 <wire x1="132.08" y1="134.62" x2="132.08" y2="132.08" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$17" class="0">
 <segment>
-<pinref part="LED3" gate="G$1" pin="C"/>
+<pinref part="PWR" gate="G$1" pin="C"/>
 <pinref part="R3" gate="G$1" pin="2"/>
 <wire x1="198.12" y1="134.62" x2="198.12" y2="132.08" width="0.1524" layer="91"/>
 </segment>
@@ -3101,6 +3101,33 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 </nets>
 </sheet>
 </sheets>
+<errors>
+<approved hash="202,1,78.74,106.68,U2,RESET,,,,"/>
+<approved hash="202,1,78.74,111.76,U2,OSCI,,,,"/>
+<approved hash="202,1,109.22,114.3,U2,DSR,,,,"/>
+<approved hash="202,1,109.22,111.76,U2,DCD,,,,"/>
+<approved hash="202,1,109.22,109.22,U2,RI,,,,"/>
+<approved hash="104,1,78.74,99.06,U2,GND7,GND,,,"/>
+<approved hash="104,1,78.74,96.52,U2,GND18,GND,,,"/>
+<approved hash="104,1,78.74,93.98,U2,GND21,GND,,,"/>
+<approved hash="104,1,78.74,116.84,U2,VCCIO,N$11,,,"/>
+<approved hash="104,1,78.74,101.6,U2,AGND,GND,,,"/>
+<approved hash="104,1,78.74,121.92,U2,VCC,5V,,,"/>
+<approved hash="202,1,109.22,99.06,U2,PWREN,,,,"/>
+<approved hash="202,1,109.22,96.52,U2,TXDEN,,,,"/>
+<approved hash="202,1,109.22,93.98,U2,SLEEP,,,,"/>
+<approved hash="208,1,78.74,119.38,3.3V,out,,,,"/>
+<approved hash="208,1,60.96,132.08,3.3V,sup,,,,"/>
+<approved hash="208,1,154.94,142.24,3.3V,sup,,,,"/>
+<approved hash="113,1,32.3427,127.195,USB,,,,,"/>
+<approved hash="113,1,149.183,138.625,JP2,,,,,"/>
+<approved hash="113,1,123.465,127,R1,,,,,"/>
+<approved hash="113,1,131.085,127,R2,,,,,"/>
+<approved hash="113,1,124.782,138.43,TX,,,,,"/>
+<approved hash="113,1,132.402,138.43,RX,,,,,"/>
+<approved hash="113,1,197.125,127,R3,,,,,"/>
+<approved hash="113,1,198.442,138.43,PWR,,,,,"/>
+</errors>
 </schematic>
 </drawing>
 </eagle>
