@@ -3164,7 +3164,7 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <part name="SUPPLY7" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="GND6" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="U1" library="SparkFun-DigitalIC" deviceset="ATMEGA328P_PDIP" device=""/>
-<part name="C4" library="SparkFun-Passives" deviceset="CAP" device="PTH" value="0.1uF"/>
+<part name="C4" library="SparkFun-Passives" deviceset="CAP" device="PTH" value="0.1mF"/>
 <part name="R11" library="SparkFun-Resistors" deviceset="RESISTOR" device="AXIAL-0.3" value="10K"/>
 <part name="SUPPLY8" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="GND5" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
@@ -3365,6 +3365,13 @@ Used, eg, on the Arduino Pro/ Pro Mini boards.&lt;br&gt;
 <wire x1="149.86" y1="154.94" x2="142.24" y2="154.94" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="154.94" x2="142.24" y2="162.56" width="0.1524" layer="91"/>
 <junction x="142.24" y="162.56"/>
+</segment>
+</net>
+<net name="N$9" class="0">
+<segment>
+<pinref part="U2" gate="G$1" pin="CTS"/>
+<wire x1="33.02" y1="149.86" x2="35.56" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="35.56" y1="149.86" x2="35.56" y2="134.62" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$13" class="0">
