@@ -8,13 +8,24 @@ float angle = PI/6.0;
 float cx = outerRadius;
 float cy = 0;
 
+boolean letter = false;
+void setupLetter() {
+  size((int)(11 * DPI), (int)(8.5 * DPI));
+  cy = outerRadius + 2;
+  cx = outerRadius + 2; // width/2.0;
+  letter = true;
+}
+
+void setupPng() {
+  size((int)outerRadius*2 + 2, (int)outerRadius*2 + 2);
+  cy = outerRadius + 1;
+  cx = outerRadius + 1;
+}
+
 void setup() {
-   size((int)(8.5 * DPI), (int)(11 * DPI));
-  //size((int)outerRadius*2, (int)outerRadius*2);
-  //noStroke();
+  //setupLetter();
+  setupPng();
   noLoop();  // Run once and stop
-  cy = outerRadius; //height/2.0;
-  cx = outerRadius; //width/2.0;
 }
 
 void draw() {
@@ -29,12 +40,16 @@ void draw() {
   
   // draw the lines
   float angle = TWO_PI/12.0;
+  float half_angle = angle/2.0;
   float angle2 = angle / 5;
   float tWidth0 = (outerRadius - innerRadius) / 3.0;
   float tWidth1 = (outerRadius - innerRadius) / 4.0;
   
   for(int i = 0; i <= 12; i++) {
     float a = angle * (float)i;
+    if (letter) {
+      a = a - half_angle;
+    }
     float a1 = a + angle2;
     
     float x0 = cx + cos(a) * innerRadius;
@@ -67,5 +82,9 @@ void draw() {
     y1 = cy + sin(a) * (outerRadius);
     line(x0, y0, x1, y1);
   }
+  
+
+  String filename = (letter ? "circle_template_p.png" : "circle_template.png");
+  save(filename);
 }
 
