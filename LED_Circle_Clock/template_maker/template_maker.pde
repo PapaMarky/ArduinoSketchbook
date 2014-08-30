@@ -1,15 +1,16 @@
 int[] angles = { 30, 10, 45, 35, 60, 38, 75, 67 };
 
-static float DPI = 72;
+static float DPI = 100; // 72;
 
-float innerRadius = 5.5 * DPI; // should be 14
-float outerRadius = 7 * DPI; // should be 18
+float innerRadius = 9.25/2 * DPI; // should be 14
+float outerRadius = 15.75/2 * DPI; // should be 18
 float angle = PI/6.0;
 float cx = outerRadius;
 float cy = 0;
 
 boolean letter = false;
 void setupLetter() {
+  DPI = 100;
   size((int)(11 * DPI), (int)(8.5 * DPI));
   cy = outerRadius + 2;
   cx = /*outerRadius + 2; // */ width/2.0;
@@ -31,13 +32,16 @@ void setup() {
 void draw() {
   background(255);
   
-  drawTemplate(0, 0);
 
   if (letter) {
-    int off = (int)(1.25 * (outerRadius - innerRadius));
-    drawTemplate(0, off);
-    drawTemplate(0, 2*off);
-    drawTemplate(0, 3*off);
+    int margin = 20;
+    drawTemplate(0, margin);
+    int off = (int)(1.3 * (outerRadius - innerRadius));
+    drawTemplate(0, margin + off);
+   // drawTemplate(0, 2*off);
+    //drawTemplate(0, 3*off);
+  } else {
+      drawTemplate(0, 0);
   }
   String filename = (letter ? "circle_template_p.png" : "circle_template.png");
   save(filename);
