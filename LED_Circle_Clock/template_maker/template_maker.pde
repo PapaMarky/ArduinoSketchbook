@@ -9,6 +9,7 @@ float cx = outerRadius;
 float cy = 0;
 
 boolean letter = false;
+
 void setupLetter() {
   size((int)(11 * DPI), (int)(8.5 * DPI));
   cy = outerRadius + 2;
@@ -31,13 +32,13 @@ void setup() {
 void draw() {
   background(255);
   
-  drawTemplate(0, 0);
+  drawTemplate(0, letter?50:0);
 
   if (letter) {
     int off = (int)(1.25 * (outerRadius - innerRadius));
-    drawTemplate(0, off);
-    drawTemplate(0, 2*off);
-    drawTemplate(0, 3*off);
+    drawTemplate(0, off+50);
+    drawTemplate(0, 2*off+50);
+    drawTemplate(0, 3*off+50);
   }
   String filename = (letter ? "circle_template_p.png" : "circle_template.png");
   save(filename);
@@ -47,18 +48,22 @@ void drawTemplate(int ox, int oy) {
   // Draw outer circle
   float X = ox + cx;
   float Y = oy + cy;
-  fill(255);
-  ellipse(X, Y, outerRadius*2, outerRadius*2);
-  // Draw inner circle
-  fill(255);
-  ellipse(X, Y, innerRadius*2, innerRadius*2);
-  
   // draw the lines
   float angle = TWO_PI/12.0;
   float half_angle = angle/2.0;
   float angle2 = angle / 5;
   float tWidth0 = (outerRadius - innerRadius) / 3.0;
   float tWidth1 = (outerRadius - innerRadius) / 4.0;
+
+  fill(255);
+  if (letter) {
+    arc(X, Y, outerRadius*2, outerRadius*2, -HALF_PI - half_angle, -HALF_PI + half_angle);
+    arc(X, Y, innerRadius*2, innerRadius*2, -HALF_PI - half_angle, -HALF_PI + half_angle);
+  } else {
+    ellipse(X, Y, outerRadius*2, outerRadius*2);
+    // Draw inner circle
+    ellipse(X, Y, innerRadius*2, innerRadius*2);
+  }
   
   for(int i = 0; i <= 12; i++) {
     float a = angle * (float)i;
