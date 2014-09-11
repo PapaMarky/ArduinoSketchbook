@@ -5,7 +5,7 @@
  /*
   * State diagram: https://docs.google.com/drawings/d/1iWZqNdk4uv99Wvf8hHpwqDw-FqMTovA7hFz8g3So90I
   */
- 
+ #include <Arduino.h>
  
  // Laser sensor (photocell) - INPUT, one analog pin
  // - laser is stand alone, battery operated device
@@ -25,6 +25,7 @@
  // Data logger - OUTPUT (Serial, needs TX/RX, only uses TX)
 
  // Joystick (?)
+ #include "flcp_statemachine.h"
  
  void setup() {
  }
