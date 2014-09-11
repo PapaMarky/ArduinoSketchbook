@@ -26,11 +26,13 @@
 
  // Joystick (?)
  #include "flcp_statemachine.h"
+ #include "input_device.h"
  
  void setup() {
  }
  
  
  void loop() {
+   g_stateMachine.loop();
  }
  
