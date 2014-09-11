@@ -26,11 +26,21 @@
 
  // Joystick (?)
  #include "flcp_statemachine.h"
+ #include "input_device.h"
  
+ const int nDevices = 2;
+ InputDevice* devices[nDevices];
+
  void setup() {
+   devices[0] = new LaserDetector();
+   devices[1] = new GoButton();
  }
  
  
  void loop() {
+   for(int i = 0; i < nDevices; i++) {
+     device[i].loop();
+   }
+   g_stateMachine.loop();
  }
  
