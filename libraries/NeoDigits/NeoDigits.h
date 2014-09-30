@@ -18,25 +18,38 @@
 #define SEG_DP_OFF SEG_G_OFF + 3
 
 // Number of pixels in a digit (including DP)
-#define SEG_SIZE SEG_DP_OFF + 1
+#define DIGIT_SIZE SEG_DP_OFF + 1
+#define COLON_SIZE 2
 
 #include "digit_defs.h"
 
 class NeoDigitDisplay {
  public:
- NeoDigits(int nDigits, int nColons) : _nDigits(nDigits), _nColons(nColons) {}
+  NeoDigits(int nDigits, int nColons);
   setup();
   loop();
 
   void SetColor(color c);
   void SetGradiant(color top_c, color bottom_c);
 
+  void SetString(String str);
+  void SetValue(char value[4]);
+  void SetDigit(int digit, char value);
+
+  void SetColon(int colon, bool on);
+  void SetDecimal(int digit, bool on);
+
+  void ClearAll();
+
  private:
-  void light_digit(int digit);
+  
+  Adafruit_NeoPixel _pixels;
+
   enum ColorScheme { SOLID, GRADIANT };
   enum TransitionType { INSTANT, FADE }
   int _nDigits;
   int _nColons;
+  int _pin;
   char _current[N_DIGITS];
   char _next[N_DIGITS];
 };
