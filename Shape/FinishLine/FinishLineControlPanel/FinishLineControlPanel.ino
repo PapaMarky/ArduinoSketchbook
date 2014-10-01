@@ -1,3 +1,5 @@
+#include <SoftwareSerial.h>
+
 /**
  * FinishLineControlPanel for Shape Security scooter races.
  */
@@ -25,21 +27,63 @@
  // Data logger - OUTPUT (Serial, needs TX/RX, only uses TX)
 
  // Joystick (?)
+
+ /* 
+  * Pin List
+  *
+  * A0 - PhotoCell
+  * A1
+  * A2
+  * A3
+  * A4
+  * A5
+  * 
+  * D0
+  * D1
+  * D2  - diskReset
+  * D3
+  * D4
+  * D5
+  * D6  - diskTx
+  * D7  - diskRx
+  * D8
+  * D9  - displayTx
+  * D10 - displayRx
+  * D11
+  * D12
+  * D13
+  */
+  
+const int photoCellPin = A0;
+const int diskReset = 2;
+const int diskTx = 6;
+const int diskRx = 7;
+const int displayTx = 9;  // This one connects to LCD
+const int displayRx = 10; // not connected
+ 
  #include "flcp_statemachine.h"
  #include "input_device.h"
+
+ #include "DataBase.h"
+ 
+ const int nDevices = 2;
+ InputDevice* devices[nDevices];
+
+ LaserDetector laserDetector;
+ GoButton goButton;
  
  const int nDevices = 2;
  InputDevice* devices[nDevices];
 
  void setup() {
-   devices[0] = new LaserDetector();
-   devices[1] = new GoButton();
+   devices[0] = &laserDetector;
+   devices[1] = &goButton;
  }
  
  
  void loop() {
    for(int i = 0; i < nDevices; i++) {
-     device[i].loop();
+     devices[i]->loop();
    }
    g_stateMachine.loop();
  }
