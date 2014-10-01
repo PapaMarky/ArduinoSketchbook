@@ -5,13 +5,13 @@ class InputDevice {
   virtual void loop() = 0;
 };
 
-class LaserDetector {
+class LaserDetector : public InputDevice {
   public:
-  virtual void loop();
+  virtual void loop() {}
 };
 
-class GoButton {
+class GoButton : public InputDevice {
   public:
-  virtual void loop();
+  virtual void loop() {}
 };
 
