@@ -65,19 +65,28 @@ const int displayRx = 10; // not connected
  #include "input_device.h"
 
  #include "DataBase.h"
+ #include "LCD.h"
  
  const int nDevices = 2;
  InputDevice* devices[nDevices];
 
  LaserDetector laserDetector;
  GoButton goButton;
- 
- const int nDevices = 2;
- InputDevice* devices[nDevices];
+
+SoftwareSerial disk(diskRx, diskTx);
+DataBase data(&disk, diskReset);
+
+SoftwareSerial display(displayRx, displayTx);
+LCD lcd(&display);
 
  void setup() {
    devices[0] = &laserDetector;
    devices[1] = &goButton;
+   
+   data.setup();
+   lcd.setup();
+   
+   lcd.clear();
  }
  
  

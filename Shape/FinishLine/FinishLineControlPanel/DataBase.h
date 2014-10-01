@@ -1,10 +1,9 @@
-
 #include <SoftwareSerial.h>
 
 class DataBase {
   public:
   DataBase(SoftwareSerial* serial, int reset) : 
-  _serial(serial), _reset(reset)
+  _serial(serial), _reset(reset), _ready(false), _failed(false)
   {  }
   
   void setup() {
@@ -13,7 +12,6 @@ class DataBase {
     reset();
     
     startCommandMode();
-    
   }
   
   boolean isReady() { return _ready; }
@@ -61,5 +59,6 @@ class DataBase {
   SoftwareSerial* _serial;
   int _reset;
   boolean _ready;
+  boolean _failed;
 };
 
