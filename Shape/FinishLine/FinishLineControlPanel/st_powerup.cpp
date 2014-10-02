@@ -8,6 +8,6 @@ void StatePowerUp::OnEnter() {
 void StatePowerUp::OnExit() {
 }
 
-void StatePowerUp::OnEvent(int event) {
+bool StatePowerUp::OnEvent(int event) {
 }
 

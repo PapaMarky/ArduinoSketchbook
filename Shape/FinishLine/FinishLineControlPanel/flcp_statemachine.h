@@ -1,3 +1,4 @@
+#include "flcp_state.h"
 
 // States
 #define ST_POWER_UP 1
@@ -24,23 +25,26 @@ static Transition TRANSITIONS [N_TRANSITIONS] = {
 
 class StateMachine {
   public:
-  StateMachine() : currentState(0), nTransitions(N_TRANSITIONS), trans(TRANSITIONS), nEvents(0) { }
+  StateMachine() : _currentState(0), _nEvents(0) { }
 
   void loop();
-  void throwEvent(int event);
  
   void transition(int transition);
+
+  void pushEvent(int event);
   
   private:
-  int popEvent();
-  int pushEvent(int event);
-
-  int currentState;
-  int nTransitions;
-  Transition* trans;
+  void processEvents();
   
-  int nEvents;
-  int eventQueue[16];
+  int popEvent();
+
+  int _currentState;
+  
+  int _nEvents;
+  static const int EVENT_QUEUE_SIZE = 16;
+  int _eventQueue[EVENT_QUEUE_SIZE];
+  
+  State* _states[NUMBER_OF_STATES];
 };
 
 static StateMachine g_stateMachine;
