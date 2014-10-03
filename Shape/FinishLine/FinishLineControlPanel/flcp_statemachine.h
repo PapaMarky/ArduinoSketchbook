@@ -1,9 +1,7 @@
+#ifndef FLCP_STATEMACHINE_H
+#define FLCP_STATEMACHINE_H
 #include "flcp_state.h"
-
-// States
-#define ST_POWER_UP 1
-#define ST_LASER_READY 2
-#define ST_READY 3
+#include <Arduino.h>
 
 // Transition Events
 #define EV_GO_BUTTON 1
@@ -25,7 +23,19 @@ static Transition TRANSITIONS [N_TRANSITIONS] = {
 
 class StateMachine {
   public:
-  StateMachine() : _currentState(0), _nEvents(0) { }
+  StateMachine() : _currentState(0), _nEvents(0) {
+    Serial.println("StateMachine CTOR");
+    AddState(&g_stPowerUp, ST_POWER_UP);
+    
+    _states[_currentState]->OnEnter();
+  }
+  
+  void AddState(State* s, int n) {
+    Serial.print("Adding state "); 
+    Serial.println(n);
+    Serial.println(s->name());
+    _states[n] = s;
+  }
 
   void loop();
  
@@ -44,7 +54,10 @@ class StateMachine {
   static const int EVENT_QUEUE_SIZE = 16;
   int _eventQueue[EVENT_QUEUE_SIZE];
   
+  int _nStates;
   State* _states[NUMBER_OF_STATES];
 };
 
-static StateMachine g_stateMachine;
+extern StateMachine* g_stateMachine;
+
+#endif // FLCP_STATEMACHINE_H

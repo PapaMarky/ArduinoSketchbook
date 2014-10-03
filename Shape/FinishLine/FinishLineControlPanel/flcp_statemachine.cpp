@@ -1,7 +1,9 @@
+#include <Arduino.h>
 
 #include "flcp_statemachine.h"
 
 void StateMachine::loop() {
+  //Serial.println("StateMachine::loop()");
   // process events
   processEvents();
   

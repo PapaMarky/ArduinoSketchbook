@@ -1,16 +1,28 @@
+#ifndef LCD_H
+#define LCD_H
+
 #include <SoftwareSerial.h>
 
 class LCD {
   public:
-  LCD(SoftwareSerial* s) : _serial(s) {}
+  LCD(SoftwareSerial* s) : _serial(s) {
+    Serial.println("LCD::CTOR()");
+    
+    _serial->begin(9600);
+  }
   
   void setup() {
-    _serial->begin(9600);
-    clear();
+    Serial.println("LCD::setup()");
   }
   
   void setText(char* line0, char* line1) {
     clear();
+    Serial.print("LCD::setText('");
+    Serial.print(line0);
+    Serial.print("', '");
+    Serial.print(line1);
+    Serial.println("')");
+    
     int len = strLen(line0);
     if (len > 0 && len < 17) {
       setCursor(0,0);
@@ -67,3 +79,4 @@ class LCD {
   SoftwareSerial* _serial;
 };
 
+#endif // LCD_H
