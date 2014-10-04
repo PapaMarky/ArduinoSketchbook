@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 // Transition Events
+#define EV_SETUP_COMPLETE 0
 #define EV_GO_BUTTON 1
 #define EV_LASER_AQUIRED 2
 #define EV_LASER_LOST 3
@@ -14,8 +15,9 @@ struct Transition {
   int next_state;
 };
 
-#define N_TRANSITIONS 3
+#define N_TRANSITIONS 4
 static Transition TRANSITIONS [N_TRANSITIONS] = {
+  {ST_POWER_UP, EV_SETUP_COMPLETE, ST_POWER_UP},
   {ST_POWER_UP, EV_LASER_AQUIRED, ST_LASER_READY},
   {ST_LASER_READY, EV_LASER_LOST, ST_POWER_UP},
   {ST_LASER_READY, EV_GO_BUTTON, ST_READY}
@@ -23,11 +25,13 @@ static Transition TRANSITIONS [N_TRANSITIONS] = {
 
 class StateMachine {
   public:
-  StateMachine() : _currentState(0), _nEvents(0) {
-    Serial.println("StateMachine CTOR");
+  StateMachine() : _currentState(ST_POWER_UP), _nEvents(0) {
+  }
+  
+  void setup() {
+    Serial.println("StateMachine::setup()");
     AddState(&g_stPowerUp, ST_POWER_UP);
-    
-    _states[_currentState]->OnEnter();
+    pushEvent(EV_SETUP_COMPLETE);
   }
   
   void AddState(State* s, int n) {
@@ -58,6 +62,6 @@ class StateMachine {
   State* _states[NUMBER_OF_STATES];
 };
 
-extern StateMachine* g_stateMachine;
+extern StateMachine g_stateMachine;
 
 #endif // FLCP_STATEMACHINE_H

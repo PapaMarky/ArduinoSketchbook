@@ -76,7 +76,7 @@ const int displayRx = 10; // not connected
 SoftwareSerial disk(diskRx, diskTx);
 DataBase data(&disk, diskReset);
 
-StateMachine* g_stateMachine;
+StateMachine g_stateMachine;
 
 
 SoftwareSerial display(displayRx, displayTx);
@@ -86,12 +86,13 @@ LCD lcd(&display);
    Serial.begin(9600);
    Serial.println("Here we go");
    
-   g_stateMachine = new StateMachine();
    //devices[0] = &laserDetector;
    //devices[1] = &goButton;
    
    //data.setup();
    lcd.setup();
+   
+   g_stateMachine.setup();
  }
  
  
@@ -100,6 +101,6 @@ LCD lcd(&display);
    for(int i = 0; i < nDevices; i++) {
      //devices[i]->loop();
    }
-   g_stateMachine->loop();
+   g_stateMachine.loop();
  }
  
