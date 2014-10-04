@@ -1,3 +1,5 @@
+#ifndef DATABASE_H
+#define DATABASE_H
 #include <SoftwareSerial.h>
 
 class DataBase {
@@ -26,13 +28,13 @@ class DataBase {
   void startCommandMode() {
     // TODO - LOOK FOR '!' in prompt.
     //Wait for OpenLog to respond with '<' to indicate it is alive and recording to a file
-    boolean ready = false;
+    _ready = false;
     while(1) {
       if(_serial->available()) {
         char c = _serial->read();
         if(c == '<') break;
         if(c == '>') {
-          ready = true;
+          _ready = true;
           break;
         }
       }
@@ -49,6 +51,7 @@ class DataBase {
         if(_serial->available()) {
           char c = _serial->read();
           if(c == '>') {
+            _ready = true;
             break;
           }
         }
@@ -61,4 +64,6 @@ class DataBase {
   boolean _ready;
   boolean _failed;
 };
+
+#endif // DATABASE_H
 

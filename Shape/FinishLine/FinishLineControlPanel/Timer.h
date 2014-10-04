@@ -16,6 +16,9 @@ class Timer {
   
   void loop() {
     if (_active) {
+      if (elapsed() >= _duration) {
+        // fire the event
+        stop();
     }
   }
   
