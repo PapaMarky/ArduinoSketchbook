@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 
-#define N_DIGITS 1
+#define MAX_DIGITS 128
 #define N_COLONS 0
 // Define offset of each segment from the begining of the digit
 // In my case horizontal segments (A, D, G) are 3 pixels,
@@ -51,16 +51,25 @@ class NeoDigitDisplay {
   void ClearAll();
 
   uint32_t color(uint8_t r, uint8_t g, uint8_t b) {return _pixels.Color(r, g, b);}
- private:
-  
-  Adafruit_NeoPixel _pixels;
 
+ private:
   enum ColorScheme { SOLID, GRADIANT };
   enum TransitionType { INSTANT, FADE };
+
+  void lightDigit(uint8_t digit);
+
+  void lightSegment(int digit, int segment, bool on);
+
+  Adafruit_NeoPixel _pixels;
+
+  ColorScheme _mode; 
   uint16_t _nDigits;
   uint16_t _nColons;
   uint8_t _pin;
-  char _current[N_DIGITS];
-  char _next[N_DIGITS];
+  // the definitions of the digits
+  byte _current[MAX_DIGITS];
+  byte _next[MAX_DIGITS];
+
+  bool _dirty;
 };
 

@@ -14,7 +14,7 @@
 #define DIG_6     (byte)B01111101
 #define DIG_7     (byte)B00000111
 #define DIG_8     (byte)B01111111
-
+#define DIG_9     (byte)B01100111
 #define DIG_A     (byte)B01110111
 #define DIG_b     (byte)B01111100
 #define DIG_C     (byte)B00111001
