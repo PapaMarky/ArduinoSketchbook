@@ -27,8 +27,8 @@
 #define SEG_DP_OFF SEG_G_OFF + 4
 #define SEG_DP_LEN 1
 // Number of pixels in a digit (including DP)
-#define DIGIT_SIZE SEG_DP_OFF + 1
-#define COLON_SIZE 2
+#define DIGIT_SIZE ((uint16_t)(SEG_DP_OFF + 1))
+#define COLON_SIZE ((uint16_t)2)
 
 #include "digit_defs.h"
 
