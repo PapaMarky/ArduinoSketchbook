@@ -55,7 +55,7 @@ const DigitDef gDigitDefs[] = {
 
 NeoDigitDisplay::NeoDigitDisplay(uint16_t nDigits, uint16_t nColons, uint8_t pinNumber)
   :
-  _pixels(nDigits * DIGIT_SIZE + nColons * COLON_SIZE, pinNumber, (uint8_t)(NEO_GRB + NEO_KHZ800)),
+  _pixels(nDigits * ((uint16_t)DIGIT_SIZE) + nColons * COLON_SIZE, pinNumber, (uint8_t)(NEO_GRB + NEO_KHZ800)),
   _mode(SOLID),
   _nDigits(nDigits), _nColons(nColons), _dirty(false)
 {
@@ -64,6 +64,12 @@ NeoDigitDisplay::NeoDigitDisplay(uint16_t nDigits, uint16_t nColons, uint8_t pin
 void NeoDigitDisplay::setup() {
   _pixels.begin();
   _pixels.show();
+  Serial.println("");
+  Serial.print("Digit Setup: nDigits: "); Serial.print(_nDigits); Serial.print(", pixels: ");
+  Serial.println(_nDigits * DIGIT_SIZE + _nColons * COLON_SIZE);
+  Serial.print("DIGIT_SIZE: "); Serial.println(DIGIT_SIZE);
+  Serial.print("nColons: "); Serial.print(_nColons); Serial.print(", COLON_SIZE: "); Serial.println(COLON_SIZE);
+  Serial.print("numPixels: "); Serial.println(_pixels.numPixels());
 }
 
 void NeoDigitDisplay::loop() {
@@ -128,17 +134,18 @@ void NeoDigitDisplay::lightSegment(int digit, int segment, bool on) {
 
   Serial.print("Seg len: ");Serial.println(len);
   Serial.print("digit: "); Serial.println(digit);
-  Serial.print("DIGIT_SIZE: ");Serial.println(DIGIT_SIZE);
-  Serial.print("digit * DIGIT_SIZE: "); Serial.println((int)DIGIT_SIZE * digit);
+  Serial.print("DIGIT_SIZE: ");Serial.println(ds);
+  Serial.print("digit * DIGIT_SIZE: "); Serial.println(ds * digit);
   Serial.print("gSegOffsets[");Serial.print(segment);Serial.print("]: ");Serial.println(gSegOffsets[segment]);
+  Serial.print("offset: ");Serial.println(offset);
   uint32_t color = 0;
   if (on) {
     color = _pixels.Color(255, 0, 0);
   }
   
   for (int i = 0; i < len; i++) {
-    Serial.print("offset: ");Serial.println(offset + i);
-    Serial.print("color: 0x");Serial.println(color,HEX);
+    //Serial.print("offset: ");Serial.println(offset + i);
+    //    Serial.print("color: 0x");Serial.println(color,HEX);
     _pixels.setPixelColor(offset + i, color);
   }
 }

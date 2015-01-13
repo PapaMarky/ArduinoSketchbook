@@ -26,32 +26,63 @@
  
  // Data logger - OUTPUT (Serial, needs TX/RX, only uses TX)
 
- // Joystick (?)
+
+ /** Add another processor for the speaker? **/
+ 
+ /* 
+  * Pin List - LID
+  *
+  * A0      - 5ws - up
+  * A1      - 5ws - down
+  * A2      - 5ws - left
+  * A3      - 5ws - right
+  * A4(SDA) - 5ws - select
+  * A5(SCL) - LCD_RS
+  * 
+  * D0(RX)  - BaseTx
+  * D1(TX)  - BaseRx
+  * D2      - diskReset
+  * D3 *    - diskTx
+  * D4      - diskRx
+  *
+  * D5 *
+  * D6 *
+  * D7      - LCD_EN
+  * D8      - LCD_DB4
+  *
+  * D9 *
+  * D10*
+  * D11*    - LCD_DB5
+  * D12     - LCD_DB6
+  * D13     - LCD_DB7 
+  */
 
  /* 
-  * Pin List
+  * Pin List - BASE
   *
-  * A0 - PhotoCell
+  * A0     - PhotoCell
   * A1
   * A2
   * A3
-  * A4
-  * A5
+  * A4(SDA)
+  * A5(SCL)
   * 
-  * D0
-  * D1
-  * D2  - diskReset
-  * D3
-  * D4
-  * D5
-  * D6  - diskTx
-  * D7  - diskRx
-  * D8
-  * D9  - displayTx
-  * D10 - displayRx
-  * D11
-  * D12
-  * D13
+  * D0(RX) - USB-TX
+  * D1(TX) - USB-RX
+  * D2     - DigitalDixplayTx  
+  * D3 *   - DigitalDixplayRx
+  * D4  
+  *
+  * D5 *
+  * D6 *   - LaserLED 
+  * D7     - LidTx
+  * D8     - LidRx
+  *
+  * D9 *   - GreenLED
+  * D10*   - YellowLED
+  * D11*   - RedLED
+  * D12    - Tree Tx
+  * D13    - Tree Rx
   */
   
 const int photoCellPin = A0;
