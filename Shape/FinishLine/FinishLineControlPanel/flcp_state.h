@@ -6,8 +6,8 @@ extern LCD lcd;
 
 // States
 #define ST_POWER_UP 0
-#define ST_LASER_READY 1
-#define ST_READY 2
+#define ST_SELFCHECK 1
+#define ST_SETUPDB 2
 
 class State {
   public:

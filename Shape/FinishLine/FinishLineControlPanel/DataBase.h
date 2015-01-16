@@ -40,7 +40,7 @@ class DataBase {
       }
     }
     
-    if (!ready) {
+    if (!_ready) {
       // 26 is ^Z
       _serial->write(26);
       _serial->write(26);

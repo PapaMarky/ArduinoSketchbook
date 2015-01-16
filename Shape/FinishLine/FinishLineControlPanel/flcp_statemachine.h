@@ -4,10 +4,14 @@
 #include <Arduino.h>
 
 // Transition Events
-#define EV_SETUP_COMPLETE 0
-#define EV_GO_BUTTON 1
-#define EV_LASER_AQUIRED 2
-#define EV_LASER_LOST 3
+#define EV_STARTUP 0
+#define EV_SELFCHECK_COMPLETE 1
+#define EV_SETUP_COMPLETE 2
+
+
+#define EV_GO_BUTTON 2
+#define EV_LASER_AQUIRED 3
+#define EV_LASER_LOST 4
 
 struct Transition {
   int state;
@@ -15,12 +19,10 @@ struct Transition {
   int next_state;
 };
 
-#define N_TRANSITIONS 4
+#define N_TRANSITIONS 2
 static Transition TRANSITIONS [N_TRANSITIONS] = {
-  {ST_POWER_UP, EV_SETUP_COMPLETE, ST_POWER_UP},
-  {ST_POWER_UP, EV_LASER_AQUIRED, ST_LASER_READY},
-  {ST_LASER_READY, EV_LASER_LOST, ST_POWER_UP},
-  {ST_LASER_READY, EV_GO_BUTTON, ST_READY}
+  {ST_POWER_UP, EV_STARTUP, ST_SELFCHECK},
+  {ST_SELFCHECK, EV_SELFCHECK_COMPLETE, ST_SETUPDB},
 };
 
 class StateMachine {

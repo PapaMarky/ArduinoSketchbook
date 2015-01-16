@@ -84,54 +84,42 @@
   * D12    - Tree Tx
   * D13    - Tree Rx
   */
-  
+
+const int laserLedPin = 5;
 const int photoCellPin = A0;
+
+/*
 const int diskReset = 2;
 const int diskTx = 6;
 const int diskRx = 7;
 const int displayTx = 9;  // This one connects to LCD
 const int displayRx = 10; // not connected
+ */
  
- #include "flcp_statemachine.h"
- #include "input_device.h"
+#include "flcp_statemachine.h"
+#include "Component.h"
+#include "Context.h"
 
- #include "DataBase.h"
- #include "LCD.h"
+#include "LaserAssembly.h"
  
- const int nDevices = 2;
- InputDevice* devices[nDevices];
+LaserAssembly laserAssembly(laserLedPin, photoCellPin);
+int g_laser_id = -1;
 
- LaserDetector laserDetector;
- GoButton goButton;
-
-SoftwareSerial disk(diskRx, diskTx);
-DataBase data(&disk, diskReset);
-
+Context baseContext;
 StateMachine g_stateMachine;
 
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Here we go");
+  
 
-SoftwareSerial display(displayRx, displayTx);
-LCD lcd(&display);
+  g_laser_id = baseContext.addComponent(&laserAssembly);
+  baseContext.setup();
+  g_stateMachine.setup();
+}
 
- void setup() {
-   Serial.begin(9600);
-   Serial.println("Here we go");
-   
-   //devices[0] = &laserDetector;
-   //devices[1] = &goButton;
-   
-   //data.setup();
-   lcd.setup();
-   
-   g_stateMachine.setup();
- }
- 
- 
- void loop() {
-   
-   for(int i = 0; i < nDevices; i++) {
-     //devices[i]->loop();
-   }
-   g_stateMachine.loop();
- }
+void loop() {
+  baseContext.loop();
+  g_stateMachine.loop();
+}
  

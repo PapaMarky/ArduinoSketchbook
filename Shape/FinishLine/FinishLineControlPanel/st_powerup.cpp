@@ -4,12 +4,12 @@
 #include "flcp_state.h"
 #include "DataBase.h"
 
-extern DataBase data
+extern DataBase data;
 
 void StatePowerUp::OnEnter() {
   Serial.println("StatePowerUp::OnEnter()");
   _start = millis();
-  lcd.setText("Scooter Madness", "v1.0");
+  //lcd.setText("Scooter Madness", "v1.0");
 }
 
 void StatePowerUp::loop() {
