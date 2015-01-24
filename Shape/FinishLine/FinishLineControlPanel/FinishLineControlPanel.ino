@@ -28,39 +28,11 @@
 
 
  /** Add another processor for the speaker? **/
- 
- /* 
-  * Pin List - LID
-  *
-  * A0      - 5ws - up
-  * A1      - 5ws - down
-  * A2      - 5ws - left
-  * A3      - 5ws - right
-  * A4(SDA) - 5ws - select
-  * A5(SCL) - LCD_RS
-  * 
-  * D0(RX)  - BaseTx
-  * D1(TX)  - BaseRx
-  * D2      - diskReset
-  * D3 *    - diskTx
-  * D4      - diskRx
-  *
-  * D5 *
-  * D6 *
-  * D7      - LCD_EN
-  * D8      - LCD_DB4
-  *
-  * D9 *
-  * D10*
-  * D11*    - LCD_DB5
-  * D12     - LCD_DB6
-  * D13     - LCD_DB7 
-  */
 
  /* 
   * Pin List - BASE
   *
-  * A0     - PhotoCell
+  * A0     - Laser PhotoCell
   * A1
   * A2
   * A3
@@ -73,8 +45,8 @@
   * D3 *   - DigitalDixplayRx
   * D4  
   *
-  * D5 *
-  * D6 *   - LaserLED 
+  * D5 *   - LaserLED
+  * D6 *    
   * D7     - LidTx
   * D8     - LidRx
   *
@@ -92,9 +64,10 @@ const int photoCellPin = A0;
 const int diskReset = 2;
 const int diskTx = 6;
 const int diskRx = 7;
-const int displayTx = 9;  // This one connects to LCD
-const int displayRx = 10; // not connected
- */
+*/
+const int displayTx = 7;  // This one connects to LCD
+const int displayRx = 8; // not connected
+
  
 #include "flcp_statemachine.h"
 #include "Component.h"
@@ -107,11 +80,13 @@ int g_laser_id = -1;
 
 Context baseContext;
 StateMachine g_stateMachine;
+SoftwareSerial LcdSerial(displayRx, displayTx);
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Here we go");
   
+  LcdSerial.begin(9600);
 
   g_laser_id = baseContext.addComponent(&laserAssembly);
   baseContext.setup();
@@ -121,5 +96,16 @@ void setup() {
 void loop() {
   baseContext.loop();
   g_stateMachine.loop();
-}
+  
+  if (Serial.available() > 0) {
+    int outgoing = Serial.read();
+    Serial.print("From USB: "); Serial.println(outgoing);
+    LcdSerial.write(outgoing);
+  }
  
+  if(LcdSerial.available() > 0) {
+    int incomming = LcdSerial.read();
+    Serial.print("From LCD: "); Serial.println(incomming);
+   }
+}
+
