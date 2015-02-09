@@ -1,3 +1,5 @@
+#include <mdComm.h>
+
 #include <SoftwareSerial.h>
 
 /**
@@ -43,7 +45,7 @@
   * D1(TX) - USB-RX
   * D2     - DigitalDixplayTx  
   * D3 *   - DigitalDixplayRx
-  * D4  
+  * D4     - GoButton
   *
   * D5 *   - LaserLED
   * D6 *    
@@ -67,7 +69,6 @@ const int diskRx = 7;
 */
 const int displayTx = 7;  // This one connects to LCD
 const int displayRx = 8; // not connected
-
  
 #include "flcp_statemachine.h"
 #include "Component.h"
@@ -83,29 +84,110 @@ StateMachine g_stateMachine;
 SoftwareSerial LcdSerial(displayRx, displayTx);
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("Here we go");
-  
+  Serial.begin(19200);
+  Serial.println("Starting Serial");
+  delay(500);
   LcdSerial.begin(9600);
 
-  g_laser_id = baseContext.addComponent(&laserAssembly);
-  baseContext.setup();
-  g_stateMachine.setup();
+  //g_laser_id = baseContext.addComponent(&laserAssembly);
+  //baseContext.setup();
+  //g_stateMachine.setup();
+  
+  mdComm::startDebug();
+  Serial.println("let's go");
 }
 
-void loop() {
-  baseContext.loop();
-  g_stateMachine.loop();
-  
-  if (Serial.available() > 0) {
-    int outgoing = Serial.read();
-    Serial.print("From USB: "); Serial.println(outgoing);
-    LcdSerial.write(outgoing);
+bool lcd_connected = false;
+
+const int MSG_BUFFER_SIZE = 64;
+mdComm::message m;
+char buffer[MSG_BUFFER_SIZE];
+bool stop = false;
+/*
+void SendHello() {
+  m.header.src = mdComm::BASE;
+  m.header.dst = mdComm::LCD;
+  m.header.msg_id = mdComm::MSG_HELLO;
+  m.header.msg_len = 0;
+  m.data = buffer;
+  m.data_size = MSG_BUFFER_SIZE;
+  mdComm::comm_result r = mdComm::write_message(m, LcdSerial);
+  Serial.print("Sent HELLO, result: "); Serial.println(r);
+  lcd_connected = false;
+}
+*/
+char cbuffer[MSG_BUFFER_SIZE];
+
+void print(Stream& serial, char* string, char* header) {
+  if (header != 0) {
+    Serial.print(header); Serial.print(": ");
   }
- 
-  if(LcdSerial.available() > 0) {
-    int incomming = LcdSerial.read();
-    Serial.print("From LCD: "); Serial.println(incomming);
-   }
+  serial.println(string);
+}
+int dumpStream(Stream& serial, char* header = 0) {
+  int i = 0;
+  if (serial.available() > 0) {
+    delay(10);
+    sprintf(cbuffer, "Got %d bytes", serial.available());
+    print(Serial, cbuffer, header);
+    while(serial.available() > 0) {
+      int b = serial.read();
+      buffer[i] = (b & 0xff);
+      i++;
+      if (b >= ' ' && b <= '~')
+        sprintf(cbuffer, "0x%02x '%c'", b, b);
+      else
+        sprintf(cbuffer, "0x%02x", b);
+        
+      print(Serial, cbuffer, header);
+    }
+    buffer[i] = '\0';
+    i++;
+    
+    sprintf(cbuffer, "'%s' + null: %d bytes", buffer, i);
+    print(Serial, cbuffer, header);
+    print(Serial, "------------------------------", header);
+  }
+  return i;
+}
+
+bool waiting = false;
+uint16_t lcd_start_wait = 1000;
+
+void loop() {
+  //baseContext.loop();
+  //g_stateMachine.loop();
+
+  if (! lcd_connected) {
+    uint15_t now = millis();
+    
+    if (LcdSerial.available()) {
+      if (LcdSerial.findUntil("lcd:ack start", "\n")) {
+        lcd_connected = true;
+      }
+    }
+    if (! lcd_connected && now - lcd_start_wait >= 500) {
+      lcd_start_wait = now;
+      LcdSerial.println("base:start");
+    }
+  }
+  
+  int i = 0;
+  if ((i = dumpStream(Serial, "USB")) > 0) {
+    //LcdSerial.println("hello");
+    mdComm::writeMessage(buffer, i, LcdSerial);
+    waiting = true;
+  }
+  
+  cbuffer[0] = '\0';
+  if (waiting && mdComm::checkForMessage(LcdSerial, buffer, MSG_BUFFER_SIZE)) {
+    mdComm::gotMessage();
+    waiting = false;
+    Serial.println("GOT MESSAGE: ");
+    Serial.println(buffer);
+
+    //cbuffer[5] = '\0';
+    //Serial.println("----------------------------");  
+  }
 }
 
