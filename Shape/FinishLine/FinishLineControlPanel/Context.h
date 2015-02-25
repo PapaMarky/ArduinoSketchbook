@@ -1,4 +1,7 @@
 // Copyright 2015, Mark Dyer
+#ifndef CONTEXT_H
+#define CONTEXT_H
+
 #include "Component.h"
 
 const int max_components = 5;
@@ -22,7 +25,11 @@ class Context {
     
     // get the component for 'id'
     // returns 0 (null) if not found
-    Component* getComponent(int id);
+    Component* getComponent(int id) {
+      if (id < 0 || id >= _nComponents)
+	return 0;
+      return _comps[id];
+    }
 
     // Call each component's setup() function
     void setup() {
@@ -40,4 +47,5 @@ class Context {
     int _nComponents;
     Component* _comps[max_components];
 };
+#endif // CONTEXT_H
 

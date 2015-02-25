@@ -1,8 +1,8 @@
+// copyright 2015, Mark Dyer
 #ifndef FLCP_STATE_H
 #define FLCP_STATE_H
 
-#include "LCD.h"
-extern LCD lcd;
+#include "globals.h"
 
 // States
 #define ST_POWER_UP 0
@@ -31,6 +31,8 @@ class StatePowerUp : public State {
   
   private:
   unsigned long _start;
+  bool _lcd_ready;
+  uint16_t lcd_start_wait;
 };
 
 static StatePowerUp g_stPowerUp;

@@ -1,10 +1,11 @@
-#include <mdComm.h>
-
-#include <SoftwareSerial.h>
-
+// -*-c++-*-
+// Copyright 2015 Mark Dyer
 /**
  * FinishLineControlPanel for Shape Security scooter races.
  */
+#include <SoftwareSerial.h>
+#include <mdComm.h>
+
  
  /*
   * State diagram: https://docs.google.com/drawings/d/1iWZqNdk4uv99Wvf8hHpwqDw-FqMTovA7hFz8g3So90I
@@ -43,30 +44,27 @@
   * 
   * D0(RX) - USB-TX
   * D1(TX) - USB-RX
-  * D2     - DigitalDixplayTx  
-  * D3 *   - DigitalDixplayRx
-  * D4     - GoButton
+  * D2     - GoButton  
+  * D3 *   - DigitalDixplayTx
+  * D4     - DigitalDixplayRx
   *
   * D5 *   - LaserLED
   * D6 *    
   * D7     - LidTx
   * D8     - LidRx
   *
-  * D9 *   - GreenLED
-  * D10*   - YellowLED
-  * D11*   - RedLED
+  * D9 *   - 
+  * D10*   - 
+  * D11*   - 
   * D12    - Tree Tx
   * D13    - Tree Rx
   */
 
+#define GO_BUTTON 2
+
 const int laserLedPin = 5;
 const int photoCellPin = A0;
 
-/*
-const int diskReset = 2;
-const int diskTx = 6;
-const int diskRx = 7;
-*/
 const int displayTx = 7;  // This one connects to LCD
 const int displayRx = 8; // not connected
  
@@ -75,47 +73,39 @@ const int displayRx = 8; // not connected
 #include "Context.h"
 
 #include "LaserAssembly.h"
- 
-LaserAssembly laserAssembly(laserLedPin, photoCellPin);
-int g_laser_id = -1;
+#include "globals.h"
 
-Context baseContext;
-StateMachine g_stateMachine;
+LaserAssembly laserAssembly(laserLedPin, photoCellPin);
+
+Context _context;
+StateMachine _stateMachine;
+
 SoftwareSerial LcdSerial(displayRx, displayTx);
+LcdComponent Lcd(&LcdSerial, 9600);
 
 void setup() {
+  pinMode(GO_BUTTON, INPUT);
+  
+  g_context = &_context;
+  g_stateMachine = &_stateMachine;
+
   Serial.begin(19200);
   Serial.println("Starting Serial");
   delay(500);
-  LcdSerial.begin(9600);
 
-  //g_laser_id = baseContext.addComponent(&laserAssembly);
-  //baseContext.setup();
-  //g_stateMachine.setup();
+  g_laser_id = g_context->addComponent(&laserAssembly);
+  g_lcd_id = g_context->addComponent(&Lcd);
+  g_context->setup();
+  g_stateMachine->setup();
   
   mdComm::startDebug();
   Serial.println("let's go");
 }
 
-bool lcd_connected = false;
-
 const int MSG_BUFFER_SIZE = 64;
 mdComm::message m;
 char buffer[MSG_BUFFER_SIZE];
 bool stop = false;
-/*
-void SendHello() {
-  m.header.src = mdComm::BASE;
-  m.header.dst = mdComm::LCD;
-  m.header.msg_id = mdComm::MSG_HELLO;
-  m.header.msg_len = 0;
-  m.data = buffer;
-  m.data_size = MSG_BUFFER_SIZE;
-  mdComm::comm_result r = mdComm::write_message(m, LcdSerial);
-  Serial.print("Sent HELLO, result: "); Serial.println(r);
-  lcd_connected = false;
-}
-*/
 char cbuffer[MSG_BUFFER_SIZE];
 
 void print(Stream& serial, char* string, char* header) {
@@ -152,14 +142,41 @@ int dumpStream(Stream& serial, char* header = 0) {
 }
 
 bool waiting = false;
-uint16_t lcd_start_wait = 1000;
 
+int lastGoButtonState = -1;
+int goButtonState = -1;
+int lastGoDebounceTime = 0;
+uint16_t debounceDelay = 10;
+
+void checkGoButton() {
+  int gb = digitalRead(GO_BUTTON);
+  
+  uint16_t now = millis();
+  if (gb != lastGoButtonState) {
+    lastGoDebounceTime = now;
+  }
+  else if ((now - lastGoDebounceTime) > debounceDelay) {
+    if (gb != goButtonState) {
+      goButtonState = gb;
+      Serial.print("Go Button: ");
+      Serial.println(goButtonState == HIGH ? "DOWN" : "UP");
+      // Do something
+      if (Lcd.isReady()) {
+        Serial.println(" - Send message to LCD");
+        sprintf(cbuffer, "base:go:%s", goButtonState == HIGH ? "down" : "up");
+        LcdSerial.println(cbuffer);
+      }
+    }
+  }
+  lastGoButtonState = gb;
+}
 void loop() {
-  //baseContext.loop();
-  //g_stateMachine.loop();
-
+  checkGoButton();
+  g_context->loop();
+  g_stateMachine->loop();
+/*
   if (! lcd_connected) {
-    uint15_t now = millis();
+    uint16_t now = millis();
     
     if (LcdSerial.available()) {
       if (LcdSerial.findUntil("lcd:ack start", "\n")) {
@@ -189,5 +206,6 @@ void loop() {
     //cbuffer[5] = '\0';
     //Serial.println("----------------------------");  
   }
+  */
 }
 

@@ -64,6 +64,4 @@ class StateMachine {
   State* _states[NUMBER_OF_STATES];
 };
 
-extern StateMachine g_stateMachine;
-
 #endif // FLCP_STATEMACHINE_H
