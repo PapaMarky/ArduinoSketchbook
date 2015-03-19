@@ -3,7 +3,7 @@
 
 class Timer {
   public:
-  Timer() _start(0), _active(false) {}
+ Timer(): _start(0), _active(false) {}
   void start(unsigned long duration, int event) {
     _start = millis();
     _active = true;

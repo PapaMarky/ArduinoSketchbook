@@ -8,11 +8,14 @@ const int max_components = 5;
 
 class Context {
   public:
-    Context() : _nComponents (0) {}
 
+    void init() {_nComponents = 0; }
     // adds the component, returns it's id
     // returns < 0 if there is an error
     int addComponent(Component* c) {
+      //      Serial.print("Context::addComponent: 0x"); Serial.println((int)(void*)c, HEX);
+      //      Serial.print(" _nComponents: "); Serial.print(_nComponents); 
+      //      Serial.print(", max: "); Serial.println(max_components);
       if (_nComponents >= max_components) 
         return -1;
 
@@ -33,14 +36,22 @@ class Context {
 
     // Call each component's setup() function
     void setup() {
-      for(int i = 0; i < _nComponents; i++)
+      for(int i = 0; i < _nComponents; i++) {
         _comps[i]->setup();
+      }
     }
     
     // Call each component's loop() function
-    void loop() {
-      for(int i = 0; i < _nComponents; i++)
-        _comps[i]->loop();
+    void loop(uint16_t now) {
+      gdbg->DEBUG("Context loop");
+      delay(500);
+      char b[50];
+      for(int i = 0; i < _nComponents; i++) {
+	snprintf(b,50,"component %d", i);
+	gdbg->DEBUG(b);
+        delay(500);
+        _comps[i]->loop(now);
+      }
     }
 
   private:

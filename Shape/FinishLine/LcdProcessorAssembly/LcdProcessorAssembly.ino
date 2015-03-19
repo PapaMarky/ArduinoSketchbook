@@ -1,3 +1,11 @@
+#include <BaseComponent.h>
+#include <button_id.h>
+#include <Controller.h>
+#include <debug_lcd.h>
+#include <scooter_data.h>
+#include <scooter_lcd.h>
+#include <screen.h>
+
 // -*-c++-*-
 // Copyright 2015, Mark Dyer
 /**
@@ -7,9 +15,15 @@
  */
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
-#include <mdComm.h>
+
+
+#include "scooter_common.h"
 
 #include "scooter_data.h"
+#include "debug_lcd.h"
+#include "screen.h"
+#include "Controller.h"
+#include "BaseComponent.h"
 
  /* 
   * Pin List - LID
@@ -45,195 +59,87 @@
 #define LCD_DB5 10
 #define LCD_DB6 11
 #define LCD_DB7 12
+
+Controller controller;
+
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB4, LCD_DB5, LCD_DB6, LCD_DB7);
+
+debug_lcd DEBUGGER;
+
+ConsoleScreen startup_screen(&lcd);
 
 #define DISK_RESET 13
 #define DISK_TX 2
 #define DISK_RX 4
-SoftwareSerial disk(DISK_RX, DISK_TX);
-ScooterData database(DISK_RESET, &disk);
+//SoftwareSerial disk(DISK_RX, DISK_TX);
+//ScooterData database(DISK_RESET, &disk);
 
-#define SW5_SELECT A0
-#define SW5_RIGHT  A1
-#define SW5_DOWN   A2
-#define SW5_LEFT   A3
-#define SW5_UP     A4
+#define SW5_SELECT_PIN A0
+#define SW5_RIGHT_PIN  A1
+#define SW5_DOWN_PIN   A2
+#define SW5_LEFT_PIN   A3
+#define SW5_UP_PIN     A4
 
-#define GO_BUTTON_LED 6
+#define RED_LED_PIN       3
+#define YELLOW_LED_PIN    9
+#define GREEN_LED_PIN     5
+#define GO_BUTTON_LED_PIN 6
 
-#define RED_LED 3
-#define YELLOW_LED 9
-#define GREEN_LED 5
-
-mdComm::message m;
 const int MSG_BUFFER_SIZE = 64;
 char buffer[MSG_BUFFER_SIZE];
-char buffer2[MSG_BUFFER_SIZE];
 
-uint16_t base_wait = 0;
+uint32_t base_wait = 0;
+#include "button_id.h"
+
+ButtonComponent select_button(SW5_SELECT_PIN, SELECT_BUTTON, &controller);
+ButtonComponent right_button(SW5_RIGHT_PIN, RIGHT_BUTTON, &controller);
+ButtonComponent left_button(SW5_LEFT_PIN, LEFT_BUTTON, &controller);
+ButtonComponent up_button(SW5_UP_PIN, UP_BUTTON, &controller);
+ButtonComponent down_button(SW5_DOWN_PIN, DOWN_BUTTON, &controller);
+
+AnalogOutComponent red_led(RED_LED_PIN);
+AnalogOutComponent yellow_led(YELLOW_LED_PIN);
+AnalogOutComponent green_led(GREEN_LED_PIN);
+AnalogOutComponent go_button_led(GO_BUTTON_LED_PIN);
+
+BaseComponent base;
 
 void setup()
 {
-  Serial.begin(9600);
-  
-  pinMode(SW5_SELECT, INPUT);
-  pinMode(SW5_UP, INPUT);
-  pinMode(SW5_DOWN, INPUT);
-  pinMode(SW5_LEFT, INPUT);
-  pinMode(SW5_RIGHT, INPUT);
-  
-  pinMode(GO_BUTTON_LED, OUTPUT);
-  
-  pinMode(RED_LED, OUTPUT);
-  pinMode(YELLOW_LED, OUTPUT);
-  pinMode(GREEN_LED, OUTPUT);
-  
-  for(int i = 0; i < MSG_BUFFER_SIZE; i++)
-    buffer[i] = 0xcc;
- 
-  m.data = (byte*)buffer;
-  m.data_size = MSG_BUFFER_SIZE;
-  strcpy(buffer, "oink");
-
+  gdbg = &DEBUGGER;
+  Serial.begin(BASE_LID_BAUD);
   lcd.begin(20,4);
-  lcd.home();
-  //lcd.print("01234567890123456789")
-  lcd.print("   Shape Scooter");
-  lcd.setCursor(0, 1);
-  lcd.print("    Finish Line");
-  
-  lcd.setCursor(0, 3);
-  lcd.print("Base: Waiting...");
 
-  database.begin();
-  database.start_command_mode();
-  lcd.setCursor(18, 3);
-  lcd.print("d");
-  
-  analogWrite(RED_LED, 0);
-  analogWrite(YELLOW_LED, 0);
-  analogWrite(GREEN_LED, 0);
-}
+  base.initialize(&Serial, HEARTRATE);
+  base.setController(&controller);
+  controller.addComponent(&base);
 
-bool waiting_for_base = true;
-bool waiting_for_disk = true;
+  controller.addComponent(&select_button);
+  controller.addComponent(&right_button);
+  controller.addComponent(&left_button);
+  controller.addComponent(&up_button);
+  controller.addComponent(&down_button);
 
-void base_wait_loop() {
-  uint16_t elapsed = millis() - base_wait;
-  if (Serial.available()) {
-    if(Serial.findUntil("base:start", "\n")) {
-      Serial.println("lcd:ack start");
-      waiting_for_base = false;
-      lcd.setCursor(0,3);
-      lcd.print("Base: Connected");
-    }
-  }
-  else if (elapsed >= 5000) {
-    // ping the base unit
-  }
-}
+  controller.addComponent(&red_led);
+  controller.addComponent(&yellow_led);
+  controller.addComponent(&green_led);
+  controller.addComponent(&go_button_led);
 
-void data_wait_loop() {
-  database.loop();
-  if (database.is_ready()){
-    waiting_for_disk = false;
-    lcd.setCursor(18, 3);
-    lcd.print("d");
-  }
-}
+  controller.setup();
 
-bool go = false;
+  controller.setScreen(&startup_screen);
 
-void go_wait_loop() {
-  if (Serial.available()) {
-    delay(10);
-    if(Serial.readBytesUntil('\n', buffer, MSG_BUFFER_SIZE) > 0) {
-      if (strcmp(buffer, "base:go:up") == 0) {
-        lcd.setCursor(12, 2);
-        lcd.print("   ");
-      }
-      else if (strcmp(buffer, "base:go:down") == 0) {
-        lcd.setCursor(12, 2);
-        lcd.print("GO!");
-      }
-    }
-  }
-}
-
-int bstate = -1;
-bool wasPressed = false;
-
-void setLEDs(byte red, byte yellow, byte green) {
-  analogWrite(RED_LED, red);
-  analogWrite(YELLOW_LED, yellow);
-  analogWrite(GREEN_LED, green);
+  //database.begin();
+  //database.start_command_mode();
+  //  lcd.setCursor(18, 3);
+  //  lcd.print("d");
+  startup_screen.addLine("Powering Up...");
 }
 
 void loop()
 {
-  int bs = -5;
-  if(digitalRead(SW5_SELECT) == HIGH) {
-    bs = SW5_SELECT;
-  }
-  else if (digitalRead(SW5_UP) == HIGH) {
-    bs = SW5_UP;
-  }
-  else if (digitalRead(SW5_DOWN) == HIGH) {
-    bs = SW5_DOWN;
-  }
-  else if (digitalRead(SW5_LEFT) == HIGH) {
-    bs = SW5_LEFT;
-  }
-  else if (digitalRead(SW5_RIGHT) == HIGH) {
-    bs = SW5_RIGHT;
-  }
-  bool pressed = true;
-  if (bstate != bs) {
-    lcd.setCursor(0,2);
-    switch(bs) {
-     case SW5_SELECT:
-      lcd.print("SW5_SELECT");
-      setLEDs(255, 255, 255);
-      break;
-     case SW5_UP:
-      lcd.print("SW5_UP    ");
-      setLEDs(255, 0, 0);
-      break;
-     case SW5_DOWN:
-      lcd.print("SW5_DOWN  ");
-      setLEDs(0, 0, 255);
-      break;
-     case SW5_LEFT:
-      lcd.print("SW5_LEFT  ");
-      setLEDs(128, 255, 0);
-      break;
-     case SW5_RIGHT:
-      lcd.print("SW5_RIGHT ");
-      setLEDs(0, 255, 128);
-      break;
-     default:
-      pressed = false;
-      lcd.print("          ");
-      setLEDs(0,0,0);
-      break;
-    }
-  }
-  
-  if (wasPressed != pressed) {
-    wasPressed = pressed;
-    if (pressed){
-      digitalWrite(GO_BUTTON_LED, HIGH);
-    } else {
-      digitalWrite(GO_BUTTON_LED, LOW);
-    }
-  }  
-  if(waiting_for_base) {
-    base_wait_loop();
-  }
-
-  if(waiting_for_disk) {
-    data_wait_loop();
-  }
+  uint32_t now = millis();
+  controller.loop(now);
 }
 
  

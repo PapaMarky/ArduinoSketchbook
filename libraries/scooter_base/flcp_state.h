@@ -20,37 +20,31 @@ class State {
 };
 
 const int NUMBER_OF_STATES = 3;
+const int LASER_READY_TIME = 5000;
 
 class StatePowerUp : public State {
   public:
+  StatePowerUp() {}
+
   void OnEnter();
   void OnExit();
   void loop();
   bool OnEvent(int event);
   char* name() { return "StatePowerUp";}
-  
+
   private:
+  bool checkLaserState(uint32_t now);
+
   unsigned long _start;
-  bool _lcd_ready;
-  uint16_t lcd_start_wait;
+  bool _lcd_connected;
+  uint32_t lcd_start_wait;
+
+  bool _laser_seen;
+  bool _laser_ready;
+  uint32_t _laser_aquired_time;
 };
 
 static StatePowerUp g_stPowerUp;
 
-class StateCheckDisk : public State {
-  public:
-  void OnEnter();
-  void OnExit();
-  void loop();
-  bool OnEvent(int event);
-};
-
-class StateAquireLaser : public State {
-  public:
-  void OnEnter();
-  void OnExit();
-  void loop();
-  bool OnEvent(int event);
-};
-
 #endif // FLCP_STATE_H
+
