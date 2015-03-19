@@ -191,6 +191,10 @@ class DataReaderDevice {
     start_t = millis();
   }
   
+  public void shutdown() {
+    sd.ClosePort();
+  }
+  
   public DataReaderDevice(PApplet sketch) {
     sd = new SerialDevice(sketch);
     sd.CheckPorts();
@@ -389,7 +393,7 @@ DataReaderDevice kb;
 
 void setup() {
   background(255);
-  size(1800, 1000);
+  size(2500, 1500);
   
   kb = new DataReaderDevice(this);
   kb.setup();
@@ -400,5 +404,9 @@ void draw() {
   delay(1000);
 }
 
+void dispose() {
+  println("STOPPING");
+  kb.shutdown();
+}
 
 
