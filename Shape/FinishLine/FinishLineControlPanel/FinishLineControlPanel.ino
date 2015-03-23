@@ -70,7 +70,6 @@ const int displayRx = 8; // not connected
 
 debug_base DEBUGGER;
 
-Context _context;
 StateMachine _stateMachine;
 
 LaserAssembly laserAssembly;
@@ -87,75 +86,27 @@ void setup() {
   gdbg = &DEBUGGER;
   
   LcdSerial.begin(BASE_LID_BAUD);
-  Lcd.initialize(&LcdSerial, HEARTRATE);
-  Lcd.become_master();
+  Lcd.initialize(&LcdSerial);
+  //Lcd.become_master();
 
   pinMode(GO_BUTTON, INPUT);
-  gdbg->DEBUG("\n***************************** (setup start): ");
-  snprintf(buffer, MSG_BUFFER_SIZE, "baud: %d", BASE_LID_BAUD);
-  gdbg->DEBUG(buffer);
-  
-  snprintf(buffer, MSG_BUFFER_SIZE, "Context: %p", &_context);
-  gdbg->DEBUG(buffer);
-  
-  _context.init();
-  g_context = &_context;
-  
-  snprintf(buffer, MSG_BUFFER_SIZE, "StateMachine: %p", &_stateMachine);
-  _stateMachine.init();
+
   g_stateMachine = &_stateMachine;
 
-  gdbg->DEBUG("Starting Serial");
-  delay(500);
-
   laserAssembly.initialize(laserLedPin, photoCellPin);
-  g_laser_id = g_context->addComponent(&laserAssembly);
+  g_laser = &laserAssembly;
+  g_laser->setup();
 
-  g_lcd_id = g_context->addComponent(&Lcd);
-  g_button_id = g_context->addComponent(&go_button);
-  g_context->setup();
+  g_lcd = &Lcd;
+  g_lcd->setup();
+
+  g_go_button = &go_button;
+  g_go_button->setup();
+ 
   g_stateMachine->setup();
   
-  gdbg->DEBUG("let's go");
+  //gdbg->DEBUG("let's go");
 }
-bool stop = false;
-
-/*
-void print(Stream& serial, char* string, char* header) {
-  if (header != 0) {
-    Serial.print(header); Serial.print(": ");
-  }
-  serial.println(string);
-}
-
-int dumpStream(Stream& serial, char* header = 0) {
-  int i = 0;
-  if (serial.available() > 0) {
-    delay(10);
-    sprintf(cbuffer, "Got %d bytes", serial.available());
-    print(Serial, cbuffer, header);
-    while(serial.available() > 0) {
-      int b = serial.read();
-      buffer[i] = (b & 0xff);
-      i++;
-      if (b >= ' ' && b <= '~')
-        sprintf(cbuffer, "0x%02x '%c'", b, b);
-      else
-        sprintf(cbuffer, "0x%02x", b);
-        
-      print(Serial, cbuffer, header);
-    }
-    buffer[i] = '\0';
-    i++;
-    
-    sprintf(cbuffer, "'%s' + null: %d bytes", buffer, i);
-    print(Serial, cbuffer, header);
-    print(Serial, "------------------------------", header);
-  }
-  return i;
-}
-*/
-bool waiting = false;
 
 int lastGoButtonState = -1;
 int goButtonState = -1;
@@ -188,13 +139,10 @@ void checkGoButton() {
 }
 
 void loop() {
-  //if (! LcdSerial.isListening()) {
-    //gdbg->DEBUG("NOT LISTENING!");
-    //LcdSerial.listen();
-  //}
   uint32_t now = millis();
-  checkGoButton();
-  g_context->loop(now);
+  g_laser->loop(now);
+  g_go_button->loop(now);
+  g_lcd->loop(now);
   g_stateMachine->loop();
 }
 

@@ -43,13 +43,11 @@ class Context {
     
     // Call each component's loop() function
     void loop(uint16_t now) {
-      gdbg->DEBUG("Context loop");
-      delay(500);
+      //      gdbg->DEBUG("Context loop");
       char b[50];
       for(int i = 0; i < _nComponents; i++) {
-	snprintf(b,50,"component %d", i);
-	gdbg->DEBUG(b);
-        delay(500);
+	//	snprintf(b,50,"component %d", i);
+	//	gdbg->DEBUG(b);
         _comps[i]->loop(now);
       }
     }

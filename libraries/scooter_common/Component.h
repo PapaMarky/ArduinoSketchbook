@@ -58,6 +58,8 @@ class AnalogOutComponent : public Component {
   virtual char* name() {return "aout";}
   void loop(uint32_t now);
 
+  void on() { setValue(255); }
+  void off() { setValue(0); }
   void setValue(uint8_t value);
   void setFadeUp(uint8_t value, uint32_t duration);
   void setFadeDown(uint8_t value, uint32_t duration);

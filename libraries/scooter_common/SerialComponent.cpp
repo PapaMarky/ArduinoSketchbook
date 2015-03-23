@@ -3,27 +3,13 @@
 #include "debug.h"
 
 void SerialComponent::loop(uint32_t now) {
-  // Manage sending heartbeat
-  pump_heart(now);
 
   if (check_for_message()) {
     gdbg->DEBUG("**got message");
-    // Manage recieved heartbeat
-    if (_msg_command == msg_heartbeat) {
-      gdbg->DEBUG("**** got heartbeat");
-      _last_heartbeat_received = now;
-      _hb_status = hb_good;
-    }
+    _is_connected = true;
     handleMessage(_msg_command, _msg_length, (byte*)_buffer);
     done_with_message();
   }
-
-  uint32_t hb_elapsed = now - _last_heartbeat_received;
-
-  if (hb_elapsed > 2 * _heartrate)
-    _hb_status = hb_missing;
-  else if (hb_elapsed > _heartrate)
-    _hb_status = hb_late;
 }
 
 void SerialComponent::send_message(byte cmd) {
@@ -62,7 +48,7 @@ void SerialComponent::done_with_message() {
 
 bool SerialComponent::check_for_message() {
   char dbg[32];
-  snprintf(dbg,32,"chk_4_msg() - %s", have_message() ? "HAVE" : "NO HAVE");
+  snprintf(dbg,32,"chk_4_msg() - %s", have_message() ? "HAVE" : "NONE");
   gdbg->DEBUG(dbg);
 
   if (!have_message()) {
@@ -104,18 +90,6 @@ bool SerialComponent::check_for_message() {
     }
   }
   return have_message();
-}
-
-void SerialComponent::pump_heart(uint32_t now) {
-  if (!_is_master)
-    return;
-
-  gdbg->DEBUG("pump_heart");
-  char b[22];
-  if (now - _last_heartbeat_sent > _heartrate) {
-    gdbg->DEBUG("send heartbeat");
-    send_message(msg_heartbeat);
-  }
 }
 
 bool SerialComponent::to_hex(char c, uint8_t& v) {

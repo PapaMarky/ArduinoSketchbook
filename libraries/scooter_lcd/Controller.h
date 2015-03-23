@@ -10,8 +10,8 @@ const int MAX_COMPONENTS = 10;
 
 class Controller: public ButtonManager {
  public:
- Controller(): _n_components(0), _screen(0) {}
-  ~Controller(){}
+ Controller(): _n_components(0), _screen(0), _state(st_startup) {}
+ ~Controller() {}
 
   void init();
 
@@ -28,9 +28,17 @@ class Controller: public ButtonManager {
   int nComponents() { return _n_components;}
 
  private:
+  enum State {
+    st_startup,
+    st_ready,
+    st_countdown,
+    st_racing,
+    st_showresults
+  };
   int _n_components;
   Screen* _screen;
   Component* _components[10];
+  State _state;
 };
 
 

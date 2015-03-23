@@ -5,9 +5,14 @@
 #include "scooter_common.h"
 
 class LcdComponent : public SerialComponent {
-  public:
+ public:
+ LcdComponent() : _ready(false) {}
+
   void handleMessage(uint8_t cmd, uint8_t len, byte* buffer);
-  private:
+  bool isReady() {return _ready;}
+
+ private:
+  bool _ready;
 };
 
 #endif // LCD_COMPONENT_H

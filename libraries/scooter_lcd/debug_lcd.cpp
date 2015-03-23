@@ -9,8 +9,10 @@ void padMsg(char* buf, int len) {
   }
   buf[21] = '\0';
 }
-  
+
+#define DO_DEBUG 0
 void debug_lcd::DEBUG(const char* msg) {
+#if DO_DEBUG
   char buf[32];
   int len = snprintf(buf, 21, "%s", msg);
   padMsg(buf, len);
@@ -23,5 +25,7 @@ void debug_lcd::DEBUG(const char* msg) {
   lcd.print(buf);
 */
   delay(1000);
-  
+#endif // DO_DEBUG
+
 }
+

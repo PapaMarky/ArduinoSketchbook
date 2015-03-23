@@ -9,7 +9,7 @@ class LaserAssembly : public Component {
  public:
 
   bool isVisible() {
-    return _value > 188;
+    return _value > 800;
   }
 
   int value() {
@@ -23,6 +23,7 @@ class LaserAssembly : public Component {
   }
   // Component Implementation
   virtual void setup() {
+    _value = 0;
     pinMode(_led_pin, OUTPUT);
     pinMode(_photocell_pin, INPUT);
   }
@@ -30,14 +31,16 @@ class LaserAssembly : public Component {
   virtual void loop(uint32_t now) {
     // Set LED based on photocell reading
     _value = 0;
-    for(int i = 0; i < 5; i++) {
+    const int SAMPLES = 5;
+    for(int i = 0; i < SAMPLES; i++) {
       _value += analogRead(_photocell_pin);
-      delay(5);
+      delay(1);
     }
-    _value = _value/20;
-    char bb[50];
-    snprintf(bb,50,"Laser: %d (%s)", _value, isVisible() ? "VISIBLE" : "NOT VISIBLE");
-    gdbg->DEBUG(bb);
+    _value = _value/SAMPLES;
+    //char bb[50];
+    //snprintf(bb,50,"Laser: %d (%s)", _value, isVisible() ? "VISIBLE" : "NOT VISIBLE");
+    //Serial.println(bb);
+    //    gdbg->DEBUG(bb);
 
     int n = isVisible() ? 255 : 0;
     analogWrite(_led_pin, n);

@@ -60,13 +60,16 @@
 #define LCD_DB6 11
 #define LCD_DB7 12
 
-Controller controller;
+Controller g_controller;
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB4, LCD_DB5, LCD_DB6, LCD_DB7);
 
 debug_lcd DEBUGGER;
 
-ConsoleScreen startup_screen(&lcd);
+StartupScreen startup_screen(&lcd);
+StartupScreen* g_startup_screen = 0;
+ReadyScreen ready_screen(&lcd);
+ReadyScreen* g_ready_screen = 0;
 
 #define DISK_RESET 13
 #define DISK_TX 2
@@ -91,11 +94,11 @@ char buffer[MSG_BUFFER_SIZE];
 uint32_t base_wait = 0;
 #include "button_id.h"
 
-ButtonComponent select_button(SW5_SELECT_PIN, SELECT_BUTTON, &controller);
-ButtonComponent right_button(SW5_RIGHT_PIN, RIGHT_BUTTON, &controller);
-ButtonComponent left_button(SW5_LEFT_PIN, LEFT_BUTTON, &controller);
-ButtonComponent up_button(SW5_UP_PIN, UP_BUTTON, &controller);
-ButtonComponent down_button(SW5_DOWN_PIN, DOWN_BUTTON, &controller);
+ButtonComponent select_button(SW5_SELECT_PIN, SELECT_BUTTON, &g_controller);
+ButtonComponent right_button(SW5_RIGHT_PIN, RIGHT_BUTTON, &g_controller);
+ButtonComponent left_button(SW5_LEFT_PIN, LEFT_BUTTON, &g_controller);
+ButtonComponent up_button(SW5_UP_PIN, UP_BUTTON, &g_controller);
+ButtonComponent down_button(SW5_DOWN_PIN, DOWN_BUTTON, &g_controller);
 
 AnalogOutComponent red_led(RED_LED_PIN);
 AnalogOutComponent yellow_led(YELLOW_LED_PIN);
@@ -106,40 +109,44 @@ BaseComponent base;
 
 void setup()
 {
+  g_startup_screen = &startup_screen;
+  g_ready_screen = &ready_screen;
   gdbg = &DEBUGGER;
-  Serial.begin(BASE_LID_BAUD);
   lcd.begin(20,4);
+  delay(1000);
+  GeneralScreen::load_shape_logo(&lcd);
+  delay(1000);
+  lcd.clear();
 
-  base.initialize(&Serial, HEARTRATE);
-  base.setController(&controller);
-  controller.addComponent(&base);
+  Serial.begin(BASE_LID_BAUD);
 
-  controller.addComponent(&select_button);
-  controller.addComponent(&right_button);
-  controller.addComponent(&left_button);
-  controller.addComponent(&up_button);
-  controller.addComponent(&down_button);
+  base.initialize(&Serial);
+  base.setController(&g_controller);
+  g_controller.addComponent(&base);
 
-  controller.addComponent(&red_led);
-  controller.addComponent(&yellow_led);
-  controller.addComponent(&green_led);
-  controller.addComponent(&go_button_led);
+  g_controller.addComponent(&select_button);
+  g_controller.addComponent(&right_button);
+  g_controller.addComponent(&left_button);
+  g_controller.addComponent(&up_button);
+  g_controller.addComponent(&down_button);
 
-  controller.setup();
+  g_controller.addComponent(&red_led);
+  g_controller.addComponent(&yellow_led);
+  g_controller.addComponent(&green_led);
+  g_controller.addComponent(&go_button_led);
 
-  controller.setScreen(&startup_screen);
+  g_controller.setup();
+
+  g_controller.setScreen(g_startup_screen);
 
   //database.begin();
   //database.start_command_mode();
-  //  lcd.setCursor(18, 3);
-  //  lcd.print("d");
-  startup_screen.addLine("Powering Up...");
 }
 
 void loop()
 {
   uint32_t now = millis();
-  controller.loop(now);
+  g_controller.loop(now);
 }
 
  

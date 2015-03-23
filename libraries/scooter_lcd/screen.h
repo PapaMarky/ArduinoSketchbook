@@ -1,23 +1,43 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 #include <arduino.h>
+#include "Component.h"
+#include "Controller.h"
+
+extern AnalogOutComponent red_led;
+extern AnalogOutComponent yellow_led;
+extern AnalogOutComponent green_led;
+extern AnalogOutComponent go_button_led;
+
+extern Controller g_controller;
+
+#include "BaseComponent.h"
+extern BaseComponent base;
 
 class LiquidCrystal;
 
 class Screen {
   public:
   Screen(LiquidCrystal* lcd) : _lcd(lcd) {}
-  
+
+  virtual void setup() = 0;
   virtual void onEnter() = 0;
   virtual void onLeave() {}
   virtual void update(uint32_t now) = 0;
   virtual void draw() = 0;
   virtual void onHeartbeat() {};
+
+  void set_line(int linenum, char* str);
+
   enum ScreenType {
     scr_none = 0,
-    scr_console = 1
+    scr_console = 1,
+    scr_general = 2,
+    scr_startup = 2
+    
   };
   virtual ScreenType type() = 0;
+  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer) = 0;
 
   protected:
   LiquidCrystal* _lcd;
@@ -25,12 +45,70 @@ class Screen {
 
 extern Screen* g_current_screen;
 
-//#define CONSOLE_LINES 4
+class GeneralScreen : public Screen {
+ public:
+ GeneralScreen(LiquidCrystal* lcd) : Screen(lcd), _logo_rotate_start(0), _showing_logo(true) {}
+  virtual void setup();
+  virtual void onEnter();
+  virtual void update(uint32_t now);
+  virtual void draw();
+  virtual ScreenType type() {return scr_general;}
+  static void load_shape_logo(LiquidCrystal* lcd);
+
+ protected:
+  void display_shape_logo();
+
+  uint32_t _logo_rotate_start;
+  bool _showing_logo; // we are either showing the logo or "scooterbot"
+};
+
+class StartupScreen : public GeneralScreen {
+ public:
+ StartupScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
+  virtual void onEnter();
+  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+};
+extern StartupScreen* g_startup_screen;
+
+class ReadyScreen : public GeneralScreen {
+ public:
+ ReadyScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
+  virtual void onEnter();
+  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+ private:
+  void onLaserOn();
+  void onLaserOff();
+};
+extern ReadyScreen* g_ready_screen;
+
+class CountdownScreen : public GeneralScreen {
+ public:
+ CountdownScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
+  virtual void onEnter();
+  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+};
+
+class TimingScreen : public GeneralScreen {
+ public:
+ TimingScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
+  virtual void onEnter();
+  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+};
+
+class ResultsScreen : public GeneralScreen {
+ public:
+ ResultsScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
+  virtual void onEnter();
+  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+};
+
+
 #define CONSOLE_LINES 3
 class ConsoleScreen : public Screen {
   public:
   ConsoleScreen(LiquidCrystal* lcd) : Screen(lcd) {}
   
+  virtual void setup();
   virtual void onEnter();
   virtual void update(uint32_t now);
   virtual void draw();

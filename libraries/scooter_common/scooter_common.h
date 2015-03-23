@@ -6,8 +6,6 @@
 #include "Component.h"
 #include "Context.h"
 
-#define BASE_LID_BAUD 9600
-// one heartbeat per 1000 millis
-#define HEARTRATE 1000
+#define BASE_LID_BAUD 19200
 
 #endif // SCOOTER_COMMON_H

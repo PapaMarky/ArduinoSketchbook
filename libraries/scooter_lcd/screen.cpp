@@ -6,6 +6,21 @@
 
 Screen* g_current_screen = 0;
 
+void Screen::set_line(int linenum, char* str) {
+  _lcd->setCursor(0, linenum);
+  char buf[21];
+  int len = snprintf(buf, 21, "%s", str);
+  while(len < 20) {
+    buf[len] = ' ';
+    len++;
+  }
+  buf[len] = '\0';
+  _lcd->print(buf);
+}
+
+void ConsoleScreen::setup() {
+}
+
 void ConsoleScreen::onEnter() {
   _lcd->clear();
   line0 = 0;

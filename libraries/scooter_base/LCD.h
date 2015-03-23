@@ -6,7 +6,7 @@
 class LCD {
   public:
   LCD(SoftwareSerial* s) : _serial(s) {
-    Serial.println("LCD::CTOR()");
+    //Serial.println("LCD::CTOR()");
     
     _serial->begin(9600);
   }
@@ -17,11 +17,11 @@ class LCD {
   
   void setText(char* line0, char* line1) {
     clear();
-    Serial.print("LCD::setText('");
-    Serial.print(line0);
-    Serial.print("', '");
-    Serial.print(line1);
-    Serial.println("')");
+    //    Serial.print("LCD::setText('");
+    //    Serial.print(line0);
+    //    Serial.print("', '");
+    //    Serial.print(line1);
+    //    Serial.println("')");
     
     int len = strLen(line0);
     if (len > 0 && len < 17) {

@@ -2,6 +2,7 @@
 #include <SerialComponent.h>
 
 #include "Controller.h"
+#include "BaseComponent.h"
 #include "screen.h"
 #include "debug_lcd.h"
 #include "button_id.h"
@@ -22,7 +23,13 @@ char* button_id_str(int id) {
   }
 }
 
-extern ConsoleScreen startup_screen;
+extern StartupScreen startup_screen;
+
+extern AnalogOutComponent red_led;
+extern AnalogOutComponent yellow_led;
+extern AnalogOutComponent green_led;
+extern AnalogOutComponent go_button_led;
+extern BaseComponent base;
 
 void Controller::onButtonEvent(int button_id, int event) {
   char b[22];
@@ -36,14 +43,12 @@ void Controller::onButtonEvent(int button_id, int event) {
 }
 
 void Controller::onMessage(uint8_t cmd, uint8_t len, byte* buffer) {
-  switch(cmd) {
-  case SerialComponent::msg_heartbeat:
-    _screen->onHeartbeat();
-    break;
-
-  case SerialComponent::msg_log:
-    if (_screen->type() == Screen::scr_console) {
-      ((ConsoleScreen*)_screen)->addLine((char*)buffer);
+  if (cmd == SerialComponent::msg_base_hello && _state != st_startup) {
+    // ruh roh
+  }
+  else {
+    if(! _screen->onMessage(cmd, len, buffer)) {
+      // ruh roh
     }
   }
 }
@@ -57,42 +62,32 @@ void Controller::setup() {
   char buff[22];
   gdbg->DEBUG("Controller::setup");
   for (int i = 0; i < nComponents(); i++) {
-    //    snprintf(buff, 21, "setup %d (%s)", i, _components[i]->name());
-    //    gdbg->DEBUG(buff);
     _components[i]->setup();
   }
+
+  red_led.setValue(0);
+  yellow_led.setValue(0);
+  green_led.setValue(0);
 }
 
 void Controller::loop(uint32_t now) {
   char buff[22];
-  //  snprintf(buff, 21, "c::loop(%d)", nComponents());
-  //  gdbg->DEBUG(buff);
   for (int i = 0; i < nComponents(); i++) {
-    //    snprintf(buff, 21, "%d %s", i, _components[i]->name());
-    //    gdbg->DEBUG(buff);
     _components[i]->loop(now);
-    //    gdbg->DEBUG("loop done");
   }
   if (_screen) {
-    //    gdbg->DEBUG("Update screen");
     _screen->update(now);
-    //    gdbg->DEBUG("draw screen");
     _screen->draw();
   }
 }
 
 void Controller::addComponent(Component* component) {
-  char buff[22];
-  //  snprintf(buff, 21, "add %d(%s:%p)", nComponents(), component->name(), component);
-  //  gdbg->DEBUG(buff);
   if (nComponents() > 10) {
-    gdbg->DEBUG("too many already");
+    gdbg->DEBUG("too many components");
     return;
   }
 
   _components[nComponents()] = component;
-  //snprintf(buff, 21, "cmp: %p -> %p", _components[nComponents()], component);
-  //gdbg->DEBUG(buff);
   _n_components++;
 }
 
@@ -105,3 +100,4 @@ void Controller::setScreen(Screen* s) {
   _screen = s;
   _screen->onEnter();
 }
+

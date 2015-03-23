@@ -1,68 +1,38 @@
 #include <Arduino.h>
 
+#include "button_id.h"
 #include "flcp_statemachine.h"
 
 
 void StateMachine::onButtonEvent(int button_id, int event) {
+  if (button_id == GO_BUTTON) {
+    // send a message
+  }
 }
 
 void StateMachine::loop() {
-  //Serial.println("StateMachine::loop()");
-  // process events
-  processEvents();
-  
-  _states[_currentState]->loop();
+  uint32_t now = millis();
+  _state->loop(now);
 }
 
-void StateMachine::processEvents() {
-  while (_nEvents > 0) {
-    int event = popEvent( );
-    if (event < 0) return;
-    Serial.print("Got Event: ");
-    Serial.println(event);
-    Serial.print("Current State: ");
-    Serial.println(_states[_currentState]->name());
-    if (_states[_currentState]->OnEvent(event)) {
-      for (int i = 0; i < N_TRANSITIONS; i++) {
-        if (TRANSITIONS[i].state == _currentState && TRANSITIONS[i].event == event) {
-          _states[_currentState]->OnExit();
-          _currentState = TRANSITIONS[i].next_state;
-          _states[_currentState]->OnEnter();
-        }
-      }
-    }
-  }
-}
+// Sketch uses 12,568 bytes (38%) of program storage space. Maximum is 32,256 bytes.
+// Global variables use 1,285 bytes (62%) of dynamic memory,
+// leaving 763 bytes for local variables. Maximum is 2,048 bytes.
 
-int StateMachine::popEvent() {
-  if (_nEvents <= 0) {
-    return -1;
+void StateMachine::set_state(State* state) {
+  char b[32];
+  snprintf(b,32,"set_state(%p)",state);
+  Serial.println(b);
+  if (_state != 0) {
+    _state->OnExit();
   }
-  _nEvents--;
-  return _eventQueue[_nEvents];
-}
-
-void StateMachine::pushEvent(int event) {
-  Serial.print("pushEvent: ");
-  Serial.println(event);
-  Serial.print("nEvents: "); Serial.println(_nEvents);
-  
-  for (int i = _nEvents; i > 0 && i < EVENT_QUEUE_SIZE; i--) {
-    Serial.print("i: "); Serial.print(i);
-    _eventQueue[i] = _eventQueue[i - 1];
-  }
-  _eventQueue[0] = event;
-  
-  if (_nEvents < EVENT_QUEUE_SIZE - 1) {
-    _nEvents++;
-  }
-  Serial.print(" - number of events: "); 
-  Serial.println(_nEvents);
+  _state = state;
+  _state->OnEnter();
 }
 
 void StateMachine::handleMessage(uint8_t cmd, uint8_t len, byte* buffer) {
-  char b[32];
-  snprintf(b, 32, "MSG: cmd: %02d, len: %d, '%s'", cmd, len, (char*)buffer);
-  gdbg->DEBUG(b);
+  //char b[32];
+  //snprintf(b, 32, "MSG: cmd: %02d, len: %d, '%s'", cmd, len, (char*)buffer);
+  //  gdbg->DEBUG(b);
 }
 

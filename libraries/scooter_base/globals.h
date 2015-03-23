@@ -1,13 +1,14 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-class Context;
 class StateMachine;
+class LaserAssembly;
+class LcdComponent;
+class ButtonComponent;
 
-extern int g_laser_id;
-extern int g_lcd_id;
-extern int g_button_id;
-extern Context *g_context;
+extern LaserAssembly* g_laser;
+extern LcdComponent* g_lcd;
+extern ButtonComponent* g_go_button;
 extern StateMachine *g_stateMachine;
 
 #endif /// GLOBALS_H

@@ -1,17 +1,18 @@
-
+// Copyright 2015, Mark Dyer
 #include <Arduino.h>
 
 #include "Context.h"
 #include "LcdComponent.h"
 #include "flcp_state.h"
+#include "flcp_statemachine.h"
 #include "LaserAssembly.h"
 
 void StatePowerUp::OnEnter() {
-  Serial.println("StatePowerUp::OnEnter()");
+  //  Serial.println("StatePowerUp::OnEnter()");
   _start = millis();
   _lcd_connected = false;
   lcd_start_wait = _start;
-  Serial.println("Setting LaserSeen to false");
+  //  Serial.println("Setting LaserSeen to false");
   _laser_ready = false;
   _laser_seen = false;
 }
@@ -20,57 +21,51 @@ bool StatePowerUp::checkLaserState(uint32_t now) {
   if (_laser_ready)
     return false;
 
-  LaserAssembly* laser = static_cast<LaserAssembly*>(g_context->getComponent(g_laser_id));
-  if (! _laser_seen && laser->isVisible()) {
+  if (! _laser_seen && g_laser->isVisible()) {
     _laser_seen = true;
-    Serial.println("Laser Seen");
     _laser_aquired_time = now;
   }
 
   if (_laser_seen) {
-    if (laser->isVisible() && (now - _laser_aquired_time) >= LASER_READY_TIME) {
+    if (g_laser->isVisible() && (now - _laser_aquired_time) >= LASER_READY_TIME) {
       _laser_ready = true;
-      Serial.println("Laser Ready");
       return true;
     }
-    if (!laser->isVisible()) {
+    if (!g_laser->isVisible()) {
       _laser_seen = false;
     }
   }
   return false;
 }
 
-void StatePowerUp::loop() {
-  uint32_t now = millis();
-  LcdComponent* lcd = static_cast<LcdComponent*>(g_context->getComponent(g_lcd_id));
-
+static uint32_t last_hello = -1001;
+const int hello_wait = 1000;
+void StatePowerUp::loop(uint32_t now) {
   if (! _lcd_connected) {
-    _lcd_connected = lcd->isConnected();
+    _lcd_connected = g_lcd->isConnected();
 
     if (_lcd_connected) {
-      Serial.println("LCD connected");
       if (_laser_ready) {
-	Serial.println("Sending laser state : 1");
-	lcd->send_message(SerialComponent::msg_laser_state, (byte*)"1", 1);
+	g_lcd->send_message(SerialComponent::msg_laser_ready);
       }
       else {
-	Serial.println("Sending laser state : 0");
-	lcd->send_message(SerialComponent::msg_laser_state, (byte*)"0", 1);
+	g_lcd->send_message(SerialComponent::msg_laser_seen);
       }
+    } else if (now - last_hello > hello_wait) {
+      g_lcd->send_message(SerialComponent::msg_base_hello);
     }
   }
 
-  if(checkLaserState(now) && _lcd_connected) {
-    Serial.println("Sending base:laser:1");
-    lcd->send_message(SerialComponent::msg_laser_state, (byte*)"1", 1);
+  if (checkLaserState(now) && _lcd_connected) {
+    g_lcd->send_message(SerialComponent::msg_laser_ready);
+  }
+
+  if (_laser_ready && g_lcd->isReady()) {
+    g_stateMachine->set_state(&g_stReady);
   }
 }
 
 void StatePowerUp::OnExit() {
-  Serial.println("StatePowerUp::OnExit");
-}
-
-bool StatePowerUp::OnEvent(int event) {
-  Serial.println("StatePowerUp::OnEvent");
+  //  gdbg->DEBUG("StatePowerUp::OnExit");
 }
 
