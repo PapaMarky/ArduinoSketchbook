@@ -8,7 +8,7 @@ void StartupScreen::onEnter() {
   set_line(1, "Connecting...");
 }
 
-bool StartupScreen::onMessage(uint8_t cmd, uint8_t len, byte* buffer) {
+bool StartupScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   switch(cmd) {
   case SerialComponent::msg_base_hello:
     set_line(1, "Waiting for Laser...");

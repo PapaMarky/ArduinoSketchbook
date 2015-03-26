@@ -8,8 +8,10 @@
 #include "LaserAssembly.h"
 
 void StateCountdown::OnEnter() {
-  _start_time = millis();
   _count = 5;
+  Serial.println("SENDING msg_count_5");
+  _start_time = millis();
+  g_lcd->send_message(SerialComponent::msg_count_5);
 }
 
 void StateCountdown::OnExit() {
@@ -22,30 +24,34 @@ void StateCountdown::loop(uint32_t now) {
     return;
   }
   uint32_t elapsed = now - _start_time;
-  if (elapsed > 5000 && _count != 0) {
-    g_lcd->send_message(SerialComponent::msg_go);
+  if (elapsed >= 5000 && _count > 0) {
+    Serial.print("Go! 0x");
+    Serial.print(SerialComponent::msg_go, HEX);
+    Serial.print(" - ");
+    Serial.println(SerialComponent::msg_go);
     _count = 0;
-    // GO TO StateTiming
+    g_lcd->send_message(SerialComponent::msg_go);
+    g_stateMachine->set_state(&g_stTiming);
     return;
   }
-  if (elapsed > 4000 && _count != 1) {
-    g_lcd->send_message(SerialComponent::msg_count_1);
+  if (elapsed > 4000 && _count > 1) {
     _count = 1;
+    g_lcd->send_message(SerialComponent::msg_count_1);
     return;
   }
-  if (elapsed > 3000 && _count != 2) {
-    g_lcd->send_message(SerialComponent::msg_count_2);
+  if (elapsed > 3000 && _count > 2) {
     _count = 2;
+    g_lcd->send_message(SerialComponent::msg_count_2);
     return;
   }
-  if (elapsed > 2000 && _count != 3) {
-    g_lcd->send_message(SerialComponent::msg_count_3);
+  if (elapsed > 2000 && _count > 3) {
     _count = 3;
+    g_lcd->send_message(SerialComponent::msg_count_3);
     return;
   }
-  if (elapsed > 1000 && _count != 4) {
-    g_lcd->send_message(SerialComponent::msg_count_4);
+  if (elapsed > 1000 && _count > 4) {
     _count = 4;
+    g_lcd->send_message(SerialComponent::msg_count_4);
     return;
   }
 }

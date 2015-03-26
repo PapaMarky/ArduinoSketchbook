@@ -37,7 +37,7 @@ class Screen {
     
   };
   virtual ScreenType type() = 0;
-  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer) = 0;
+  virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer) = 0;
 
   protected:
   LiquidCrystal* _lcd;
@@ -66,7 +66,7 @@ class StartupScreen : public GeneralScreen {
  public:
  StartupScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
   virtual void onEnter();
-  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
 };
 extern StartupScreen* g_startup_screen;
 
@@ -74,7 +74,7 @@ class ReadyScreen : public GeneralScreen {
  public:
  ReadyScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
   virtual void onEnter();
-  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
  private:
   void onLaserOn();
   void onLaserOff();
@@ -85,21 +85,27 @@ class CountdownScreen : public GeneralScreen {
  public:
  CountdownScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
   virtual void onEnter();
-  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
+  virtual void update(uint32_t now);
+ private:
+  int _n;
+  int _ndots;
+  uint32_t _dot_start;
 };
+extern CountdownScreen* g_countdown_screen;
 
 class TimingScreen : public GeneralScreen {
  public:
  TimingScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
   virtual void onEnter();
-  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
 };
 
 class ResultsScreen : public GeneralScreen {
  public:
  ResultsScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
   virtual void onEnter();
-  virtual bool onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
 };
 
 

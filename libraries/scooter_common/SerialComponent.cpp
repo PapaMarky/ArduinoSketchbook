@@ -12,12 +12,12 @@ void SerialComponent::loop(uint32_t now) {
   }
 }
 
-void SerialComponent::send_message(byte cmd) {
+void SerialComponent::send_message(uint16_t cmd) {
   send_message(cmd, 0, 0);
 }
 
-void SerialComponent::send_message(byte cmd, byte* data, byte len) {
-  byte b[64];
+void SerialComponent::send_message(uint16_t cmd, char* data, byte len) {
+  char b[64];
   char dbg[32];
   snprintf(dbg,64,"send %02x", cmd);
   gdbg->DEBUG(dbg);
@@ -32,7 +32,7 @@ void SerialComponent::send_message(byte cmd, byte* data, byte len) {
     b[i+4+len] = terminator[i];
   
   b[len+4+SCOOTER_MESSAGE_TERMINATOR_LENGTH] = '\0';
-  snprintf(dbg,32,"'%s'",(char*)b);
+  snprintf(dbg,32,"cmd: 0x%02x (%d) = '%s'",cmd, cmd, (char*)b);
   gdbg->DEBUG(dbg);
   int sent = _serial->print((char*)b);
   //  int sent = _serial->write(b, len + 4 + SCOOTER_MESSAGE_TERMINATOR_LENGTH+1);
@@ -50,7 +50,6 @@ bool SerialComponent::check_for_message() {
   char dbg[32];
   snprintf(dbg,32,"chk_4_msg() - %s", have_message() ? "HAVE" : "NONE");
   gdbg->DEBUG(dbg);
-
   if (!have_message()) {
     int count = _serial->available();
     while(count > 0) {
@@ -112,21 +111,43 @@ bool SerialComponent::str_to_int(char* data, uint8_t& value) {
   }
   return false;
 }
+void SerialComponent::TEST() {
+  byte b = 0;
+  char buf[4];
+  while (b < 0x20) {
+    Serial.print("Test: "); Serial.println(b,HEX);
+    int_to_str(b, buf);
+    buf[2] = 0;
+    Serial.print(" -> "); Serial.println(buf);
+    uint8_t v;
+    str_to_int(buf, v);
+    Serial.print(" ---> "); Serial.println(v,HEX);
+    if (v == b) 
+      Serial.println("SUCCESS");
+    else
+      Serial.println("FAIL");
+    b++;
+  }
+}
 
-bool SerialComponent::to_char(byte b, byte& c) {
+bool SerialComponent::to_char(byte b, char& c) {
+  char bb[32];
+  snprintf(bb,32,"to_char: 0x%02x (%d)", b, b);
   if (b < 10)
     c = '0' + b;
   else if (b < 16)
     c = 'a' + (b - 10);
   else
     return false;
+  snprintf(bb,32," - returning '%c'", (char)c);
   return true;
 }
 
-bool SerialComponent::int_to_str(uint8_t value, byte* data) {
-  byte v = (value & 0xf0) >> 8;
+bool SerialComponent::int_to_str(uint16_t value, char* data) {
+  byte v = (value & 0xf0) >> 4;
   to_char(v, data[0]);
   to_char(value & 0x0f, data[1]);
+  return true;
 }
 
 const char* _terminator = SCOOTER_MESSAGE_TERMINATOR;

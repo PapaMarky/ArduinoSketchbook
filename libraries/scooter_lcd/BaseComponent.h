@@ -8,7 +8,7 @@ class Controller;
 
 class BaseComponent : public SerialComponent {
  public:
-  void handleMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  void handleMessage(uint16_t cmd, uint8_t len, byte* buffer);
   void setController(Controller* c) { _controller = c; }
  private:
   Controller* _controller;

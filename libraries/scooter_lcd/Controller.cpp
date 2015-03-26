@@ -42,7 +42,7 @@ void Controller::onButtonEvent(int button_id, int event) {
   }
 }
 
-void Controller::onMessage(uint8_t cmd, uint8_t len, byte* buffer) {
+void Controller::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   if (cmd == SerialComponent::msg_base_hello && _state != st_startup) {
     // ruh roh
   }

@@ -5,8 +5,14 @@
 
 
 void StateMachine::onButtonEvent(int button_id, int event) {
+  Serial.println("GOT BUTTON EVENT");
   if (button_id == GO_BUTTON) {
     // send a message
+    Serial.println(" -- GO_BUTTON");
+    if (event == BUTTON_RELEASED) {
+      Serial.println("   -- RELEASED");
+      _state->OnGoButton();
+    }
   }
 }
 
@@ -30,7 +36,7 @@ void StateMachine::set_state(State* state) {
   _state->OnEnter();
 }
 
-void StateMachine::handleMessage(uint8_t cmd, uint8_t len, byte* buffer) {
+void StateMachine::handleMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   //char b[32];
   //snprintf(b, 32, "MSG: cmd: %02d, len: %d, '%s'", cmd, len, (char*)buffer);
   //  gdbg->DEBUG(b);

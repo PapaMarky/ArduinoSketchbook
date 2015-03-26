@@ -8,7 +8,7 @@ class LcdComponent : public SerialComponent {
  public:
  LcdComponent() : _ready(false) {}
 
-  void handleMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  void handleMessage(uint16_t cmd, uint8_t len, byte* buffer);
   bool isReady() {return _ready;}
 
  private:

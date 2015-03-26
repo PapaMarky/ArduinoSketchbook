@@ -17,9 +17,14 @@ void ReadyScreen::onLaserOff() {
 
 void ReadyScreen::onEnter() {
   set_line(1, "Ready to Rumble");
+  onLaserOn();
+  red_led.off();
+  yellow_led.off();
+  green_led.off();
+  go_button_led.off();
 }
 
-bool ReadyScreen::onMessage(uint8_t cmd, uint8_t len, byte* buffer) {
+bool ReadyScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   switch(cmd) {
   case SerialComponent::msg_laser_on:
     onLaserOn();
@@ -28,7 +33,7 @@ bool ReadyScreen::onMessage(uint8_t cmd, uint8_t len, byte* buffer) {
     onLaserOff();
     return true;
   case SerialComponent::msg_count_5:
-    //    g_controller.setScreen(g_countdown_screen);
+    g_controller.setScreen(g_countdown_screen);
     return true;
   }
   return false;

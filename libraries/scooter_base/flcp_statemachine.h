@@ -21,7 +21,7 @@ class StateMachine : public ButtonManager {
 
   void loop();
 
-  void handleMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  void handleMessage(uint16_t cmd, uint8_t len, byte* buffer);
 
  private:
   State* _state;

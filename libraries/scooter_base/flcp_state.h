@@ -18,6 +18,7 @@ class State {
   State() {}
   virtual void OnEnter() {}
   virtual void OnExit() {}
+  virtual void OnGoButton() {}
   virtual void loop(uint32_t now) {}
 
  protected:
@@ -53,6 +54,7 @@ class StateReady : public State {
   void OnEnter();
   void OnExit();
   void loop(uint32_t now);
+  void OnGoButton();
 
  private:
   bool _laser_on;

@@ -43,9 +43,11 @@ class SerialComponent : public Component {
     msg_go          = 16,
     msg_jump_start  = 17,
   };
+
+  void TEST();
   virtual char* name() {return "serial";}
 
-  virtual void handleMessage(uint8_t cmd, uint8_t len, byte* buffer) = 0;
+  virtual void handleMessage(uint16_t cmd, uint8_t len, byte* buffer) = 0;
 
   void initialize(Stream* serial) {
     _serial = serial;
@@ -65,8 +67,8 @@ class SerialComponent : public Component {
     return _message_length > 0; 
   }
   int message_length() { return _message_length; }
-  void send_message(byte cmd);
-  void send_message(byte cmd, byte* data, byte len);
+  void send_message(uint16_t cmd);
+  void send_message(uint16_t cmd, char* data, byte len);
 
   void become_master() { _is_master = true; }
  protected:
@@ -76,8 +78,8 @@ class SerialComponent : public Component {
     bool to_hex(char c, uint8_t& v);
     bool str_to_int(char* data, uint8_t& value);
 
-    bool to_char(byte b, byte& c);
-    bool int_to_str(uint8_t value, byte* data);
+    bool to_char(byte b, char& c);
+    bool int_to_str(uint16_t value, char* data);
 
     bool check_for_terminator();
     void done_with_message();

@@ -70,6 +70,8 @@ StartupScreen startup_screen(&lcd);
 StartupScreen* g_startup_screen = 0;
 ReadyScreen ready_screen(&lcd);
 ReadyScreen* g_ready_screen = 0;
+CountdownScreen countdown_screen(&lcd);
+CountdownScreen* g_countdown_screen = 0;
 
 #define DISK_RESET 13
 #define DISK_TX 2
@@ -111,6 +113,7 @@ void setup()
 {
   g_startup_screen = &startup_screen;
   g_ready_screen = &ready_screen;
+  g_countdown_screen = &countdown_screen;
   gdbg = &DEBUGGER;
   lcd.begin(20,4);
   delay(1000);

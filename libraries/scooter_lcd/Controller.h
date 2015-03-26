@@ -21,7 +21,7 @@ class Controller: public ButtonManager {
   void addComponent(Component* component);
 
   void onButtonEvent(int button_id, int event);
-  void onMessage(uint8_t cmd, uint8_t len, byte* buffer);
+  void onMessage(uint16_t cmd, uint8_t len, byte* buffer);
 
   void setScreen(Screen* s);
   Screen* getScreen() { return _screen; }

@@ -3,6 +3,6 @@
 #include "BaseComponent.h"
 #include "Controller.h"
 
-void BaseComponent::handleMessage(uint8_t cmd, uint8_t len, byte* buffer) {
+void BaseComponent::handleMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   _controller->onMessage(cmd, len, buffer);
 }

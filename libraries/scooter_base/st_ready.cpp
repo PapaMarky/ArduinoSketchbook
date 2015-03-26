@@ -16,6 +16,14 @@ void StateReady::OnEnter() {
 void StateReady::OnExit() {
 }
 
+void StateReady::OnGoButton() {
+  Serial.println("StateReady::OnGoButton()");
+  if (! g_laser->isVisible()) {
+    Serial.println(" -- Laser visible");
+    g_stateMachine->set_state(&g_stCountdown);
+  }
+}
+
 void StateReady::loop(uint32_t now) {
   if (_laser_on && ! g_laser->isVisible()) {
     g_lcd->send_message(SerialComponent::msg_laser_off);
