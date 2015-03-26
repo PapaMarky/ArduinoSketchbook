@@ -46,8 +46,8 @@ void Controller::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   if (cmd == SerialComponent::msg_base_hello && _screen != g_startup_screen) {
     setScreen(g_startup_screen);
     g_startup_screen->set_line(1, "       RESET!       ");
-      g_startup_screen->onMessage(cmd, len, buffer);
-
+    delay(1000);
+    g_startup_screen->onMessage(cmd, len, buffer);
   }
   else {
     if(! _screen->onMessage(cmd, len, buffer)) {

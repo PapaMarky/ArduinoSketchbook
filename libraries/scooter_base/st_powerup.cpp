@@ -40,6 +40,7 @@ bool StatePowerUp::checkLaserState(uint32_t now) {
 
 static uint32_t last_hello = -1001;
 const int hello_wait = 1000;
+static bool was_seen = false;
 void StatePowerUp::loop(uint32_t now) {
   if (! _lcd_connected) {
     _lcd_connected = g_lcd->isConnected();
@@ -48,8 +49,9 @@ void StatePowerUp::loop(uint32_t now) {
       if (_laser_ready) {
 	g_lcd->send_message(SerialComponent::msg_laser_ready);
       }
-      else {
+      else if (_laser_seen) {
 	g_lcd->send_message(SerialComponent::msg_laser_seen);
+	was_seen = true;
       }
     } else if (now - last_hello > hello_wait) {
       g_lcd->send_message(SerialComponent::msg_base_hello);
@@ -57,7 +59,12 @@ void StatePowerUp::loop(uint32_t now) {
   }
 
   if (checkLaserState(now) && _lcd_connected) {
+    
     g_lcd->send_message(SerialComponent::msg_laser_ready);
+  }
+  else if (_lcd_connected && _laser_seen && ! was_seen) {
+    g_lcd->send_message(SerialComponent::msg_laser_seen);
+    was_seen = true;
   }
 
   if (_laser_ready && g_lcd->isReady()) {
