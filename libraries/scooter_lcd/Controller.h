@@ -22,6 +22,7 @@ class Controller: public ButtonManager {
 
   void onButtonEvent(int button_id, int event);
   void onMessage(uint16_t cmd, uint8_t len, byte* buffer);
+  void onFoul(char* message);
 
   void setScreen(Screen* s);
   Screen* getScreen() { return _screen; }
@@ -30,7 +31,7 @@ class Controller: public ButtonManager {
  private:
   int _n_components;
   Screen* _screen;
-  Component* _components[10];
+  Component* _components[MAX_COMPONENTS];
 };
 
 

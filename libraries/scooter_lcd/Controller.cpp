@@ -1,12 +1,13 @@
 // copyright 2015, Mark Dyer
 #include <SerialComponent.h>
+//#include <LiquidCrystal.h>
 
 #include "Controller.h"
 #include "BaseComponent.h"
 #include "screen.h"
 #include "debug_lcd.h"
 #include "button_id.h"
-
+#include "strings.h"
 
 char* button_id_str(int id) {
   switch(id) {
@@ -32,9 +33,6 @@ extern AnalogOutComponent go_button_led;
 extern BaseComponent base;
 
 void Controller::onButtonEvent(int button_id, int event) {
-  char b[22];
-  snprintf(b, 21, "evt: %s %s", button_id_str(button_id), event_to_str(event));
-  gdbg->DEBUG(b);
   if (_screen->type() == Screen::scr_console) {
     char b[21];
     sprintf(b, "%s %s", button_id_str(button_id), event_to_str(event));
@@ -42,10 +40,26 @@ void Controller::onButtonEvent(int button_id, int event) {
   }
 }
 
+void Controller::onFoul(char* msg) {
+  g_foul_screen->set_message(msg);
+  setScreen(g_foul_screen);
+}
+
+// extern LiquidCrystal lcd;
+
 void Controller::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
+  /*
+  char buf[21];
+  snprintf(buf, 21, "CMD: %02x, len: %d", cmd, len);
+  lcd.setCursor(0,2);
+  lcd.print("                    ");
+  lcd.setCursor(0,2);
+  lcd.print(buf);
+  delay(1000);
+  */
   if (cmd == SerialComponent::msg_base_hello && _screen != g_startup_screen) {
     setScreen(g_startup_screen);
-    g_startup_screen->set_line(1, "       RESET!       ");
+    g_startup_screen->set_line(1, s(S_RESET));
     delay(1000);
     g_startup_screen->onMessage(cmd, len, buffer);
   }
@@ -62,31 +76,31 @@ void Controller::init() {
 }
 
 void Controller::setup() {
-  char buff[22];
-  gdbg->DEBUG("Controller::setup");
   for (int i = 0; i < nComponents(); i++) {
     _components[i]->setup();
   }
 
-  red_led.setValue(0);
-  yellow_led.setValue(0);
-  green_led.setValue(0);
+  red_led.off();
+  yellow_led.off();
+  green_led.off();
+  go_button_led.off();
 }
 
 void Controller::loop(uint32_t now) {
-  char buff[22];
   for (int i = 0; i < nComponents(); i++) {
     _components[i]->loop(now);
   }
   if (_screen) {
     _screen->update(now);
-    _screen->draw();
   }
+  //  lcd.setCursor(0,2);
+  //  lcd.print("controller loop done");
+  //  delay(1000);
 }
 
 void Controller::addComponent(Component* component) {
-  if (nComponents() > 10) {
-    gdbg->DEBUG("too many components");
+  if (nComponents() >= MAX_COMPONENTS) {
+    //    gdbg->DEBUG("too many components");
     return;
   }
 

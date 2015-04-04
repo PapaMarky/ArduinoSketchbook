@@ -1,22 +1,23 @@
 // Copyright 2015, Mark Dyer
+#include "strings.h"
 #include "screen.h"
 
 #include "SerialComponent.h"
 
 void ReadyScreen::onLaserOn() {
-  set_line(2, "Move Up to the Line");
+  set_line(2, s(S_MOVE_UP));
   set_line(3, " ");
   go_button_led.off();
 }
 
 void ReadyScreen::onLaserOff() {
-  set_line(2, "Press Go Button to");
-  set_line(3, "Start Countdown");
+  set_line(2, s(S_PRESS_GO));
+  set_line(3, s(S_START_COUNT));
   go_button_led.on();
 }
 
 void ReadyScreen::onEnter() {
-  set_line(1, "Ready to Rumble");
+  set_line(1, s(S_RUMBLE));
   onLaserOn();
   red_led.off();
   yellow_led.off();

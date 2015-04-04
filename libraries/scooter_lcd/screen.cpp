@@ -4,8 +4,6 @@
 #include <string.h>
 #include <LiquidCrystal.h>
 
-Screen* g_current_screen = 0;
-
 void Screen::set_line(int linenum, char* str) {
   _lcd->setCursor(0, linenum);
   char buf[21];
@@ -18,8 +16,6 @@ void Screen::set_line(int linenum, char* str) {
   _lcd->print(buf);
 }
 
-void ConsoleScreen::setup() {
-}
 
 void ConsoleScreen::onEnter() {
   _lcd->clear();
@@ -33,9 +29,6 @@ void ConsoleScreen::onEnter() {
 }
 
 void ConsoleScreen::update(uint32_t now) {
-}
-
-void ConsoleScreen::draw() {
   char buff[22];
   snprintf(buff, 21, "draw(), dirty: %s", dirty ? "T" : "F");
   gdbg->DEBUG(buff);
@@ -63,14 +56,7 @@ void ConsoleScreen::draw() {
     if (n < 0) {
       n = CONSOLE_LINES - 1;
     }
-}
-}
-static int hb_count = 0;
-void ConsoleScreen::onHeartbeat() {
-  hb_count++;
-  char b[20];
-  sprintf(b, "Heartbeat: %d", hb_count);
-  addLine(b);
+  }
 }
 
 void ConsoleScreen::addLine(const char* line) {

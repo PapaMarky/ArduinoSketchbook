@@ -96,10 +96,11 @@ class StateResults : public State {
 class StateFoul : public State {
  public:
   StateFoul() {}
-
+  void OnEnter();
+  void OnGoButton();
   void loop(uint32_t now);
-
-  //  char* name() { return "StateFoul";}
+ private:
+  uint32_t _start_time;
 };
 
 static StatePowerUp g_stPowerUp;

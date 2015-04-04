@@ -37,8 +37,9 @@ void StateMachine::set_state(State* state) {
 }
 
 void StateMachine::handleMessage(uint16_t cmd, uint8_t len, byte* buffer) {
-  //char b[32];
-  //snprintf(b, 32, "MSG: cmd: %02d, len: %d, '%s'", cmd, len, (char*)buffer);
+  char b[32];
+  snprintf(b, 32, "MSG: cmd: %02d, len: %d, '%s'", cmd, len, (char*)buffer);
+  Serial.println(b);
   //  gdbg->DEBUG(b);
 }
 

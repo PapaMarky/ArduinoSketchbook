@@ -7,5 +7,12 @@
 #include "LcdComponent.h"
 #include "LaserAssembly.h"
 
+void StateFoul::OnEnter() {
+}
+
+void StateFoul::OnGoButton() {
+  g_stateMachine->set_state(&g_stReady);
+}
+
 void StateFoul::loop(uint32_t now) {
 }

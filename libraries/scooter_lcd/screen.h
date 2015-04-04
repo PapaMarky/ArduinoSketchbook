@@ -24,8 +24,6 @@ class Screen {
   virtual void onEnter() = 0;
   virtual void onLeave() {}
   virtual void update(uint32_t now) = 0;
-  virtual void draw() = 0;
-  virtual void onHeartbeat() {};
 
   void set_line(int linenum, char* str);
 
@@ -43,15 +41,12 @@ class Screen {
   LiquidCrystal* _lcd;
 };
 
-extern Screen* g_current_screen;
-
 class GeneralScreen : public Screen {
  public:
  GeneralScreen(LiquidCrystal* lcd) : Screen(lcd), _logo_rotate_start(0), _showing_logo(true) {}
   virtual void setup();
   virtual void onEnter();
   virtual void update(uint32_t now);
-  virtual void draw();
   virtual ScreenType type() {return scr_general;}
   static void load_shape_logo(LiquidCrystal* lcd);
 
@@ -88,18 +83,39 @@ class CountdownScreen : public GeneralScreen {
   virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
   virtual void update(uint32_t now);
  private:
-  int _n;
-  int _ndots;
+  byte _n;
+  byte _ndots;
   uint32_t _dot_start;
 };
+
 extern CountdownScreen* g_countdown_screen;
+
+class FoulScreen : public GeneralScreen {
+ public:
+ FoulScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
+  void set_message(char* msg);
+  virtual void onEnter();
+  virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
+  virtual void update(uint32_t now);
+ private:
+  char _msg[21];
+  uint32_t _blink_start;
+};
+extern FoulScreen* g_foul_screen;
 
 class TimingScreen : public GeneralScreen {
  public:
  TimingScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
   virtual void onEnter();
   virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
+  virtual void update(uint32_t now);
+
+  void elapsedToString(uint32_t elapsed, char* buffer);
+
+ private:
+  uint32_t _start;
 };
+extern TimingScreen* g_timing_screen;
 
 class ResultsScreen : public GeneralScreen {
  public:
@@ -107,7 +123,6 @@ class ResultsScreen : public GeneralScreen {
   virtual void onEnter();
   virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
 };
-
 
 #define CONSOLE_LINES 3
 class ConsoleScreen : public Screen {
@@ -117,8 +132,6 @@ class ConsoleScreen : public Screen {
   virtual void setup();
   virtual void onEnter();
   virtual void update(uint32_t now);
-  virtual void draw();
-  virtual void onHeartbeat();
   virtual ScreenType type() {return Screen::scr_console; }
   
   void addLine(const char* line);

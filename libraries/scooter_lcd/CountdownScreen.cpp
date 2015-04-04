@@ -2,6 +2,7 @@
 #include <LiquidCrystal.h>
 
 #include "screen.h"
+#include "strings.h"
 
 #include "SerialComponent.h"
 
@@ -15,9 +16,9 @@ void CountdownScreen::update(uint32_t now) {
 
 void CountdownScreen::onEnter() {
   _lcd->setCursor(0, 2);
-  _lcd->print("                    ");
+  _lcd->print(s(S_BLANK));
   _lcd->setCursor(0, 3);
-  _lcd->print("                    ");
+  _lcd->print(s(S_BLANK));
   _lcd->setCursor(0, 2);
   _lcd->print("5");
   _n = 0;
@@ -29,10 +30,10 @@ int NUM = 0;
 bool CountdownScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   char* n = "";
   NUM++;
-  char b[22];
-  snprintf(b,22,"0x%02x (%03d): %06d", cmd, cmd, NUM);
-  _lcd->setCursor(0, 3);
-  _lcd->print(b);
+  //char b[22];
+  //snprintf(b,22,"0x%02x (%03d): %06d", cmd, cmd, NUM);
+  //_lcd->setCursor(0, 3);
+  //_lcd->print(b);
   switch(cmd) {
   case SerialComponent::msg_count_4:
     _n = 1;
@@ -52,11 +53,10 @@ bool CountdownScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
     break;
   case SerialComponent::msg_go:
     // move to timing screen
-    set_line(3, "        GO!!        ");
+    set_line(3, s(S_GO));
     return true;
   case SerialComponent::msg_jump_start:
-    // move to foul screen
-    set_line(3, "    FALSE START!!   ");
+    g_controller.onFoul(s(S_FALSE_START));
     return true;
   default:
     return false;

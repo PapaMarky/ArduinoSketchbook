@@ -1,7 +1,7 @@
 // Copyright 2015, Mark Dyer
-#include "screen.h"
-
 #include <LiquidCrystal.h>
+#include "strings.h"
+#include "screen.h"
 
 static byte original_shape_logo_data[8][8] = {
   { // 0
@@ -70,8 +70,7 @@ void GeneralScreen::load_shape_logo(LiquidCrystal* lcd) {
 
 void GeneralScreen::display_shape_logo() {
   _lcd->setCursor(0, 0);
-  _lcd->print("Shape Security, Inc.");
-  return;
+  _lcd->print(s(S_SHAPE));
   /*
   _lcd->print("      ");
   for (byte i = 0; i < 8; i++)
@@ -97,10 +96,7 @@ void GeneralScreen::update(uint32_t now) {
       display_shape_logo();
     else {
       _lcd->setCursor(0, 0);
-      _lcd->print("   ScooterBot 1.0   ");
+      _lcd->print(s(S_SCOOTERBOT));
     }
   }
-}
-
-void GeneralScreen::draw() {
 }

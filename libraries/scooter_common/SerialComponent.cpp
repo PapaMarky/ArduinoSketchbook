@@ -5,7 +5,7 @@
 void SerialComponent::loop(uint32_t now) {
 
   if (check_for_message()) {
-    gdbg->DEBUG("**got message");
+    //    gdbg->DEBUG("**got message");
     _is_connected = true;
     handleMessage(_msg_command, _msg_length, (byte*)_buffer);
     done_with_message();
@@ -18,9 +18,9 @@ void SerialComponent::send_message(uint16_t cmd) {
 
 void SerialComponent::send_message(uint16_t cmd, char* data, byte len) {
   char b[64];
-  char dbg[32];
-  snprintf(dbg,64,"send %02x", cmd);
-  gdbg->DEBUG(dbg);
+  //  char dbg[32];
+  //  snprintf(dbg,64,"send %02x", cmd);
+  //  gdbg->DEBUG(dbg);
   int_to_str(cmd, &b[0]);
   int_to_str(len, &b[2]);
   int i = 0;
@@ -32,12 +32,12 @@ void SerialComponent::send_message(uint16_t cmd, char* data, byte len) {
     b[i+4+len] = terminator[i];
   
   b[len+4+SCOOTER_MESSAGE_TERMINATOR_LENGTH] = '\0';
-  snprintf(dbg,32,"cmd: 0x%02x (%d) = '%s'",cmd, cmd, (char*)b);
-  gdbg->DEBUG(dbg);
+  //  snprintf(dbg,32,"cmd: 0x%02x (%d) = '%s'",cmd, cmd, (char*)b);
+  //  gdbg->DEBUG(dbg);
   int sent = _serial->print((char*)b);
   //  int sent = _serial->write(b, len + 4 + SCOOTER_MESSAGE_TERMINATOR_LENGTH+1);
-  snprintf(dbg, 32, "sent: %d bytes", sent);
-  gdbg->DEBUG(dbg);
+  //  snprintf(dbg, 32, "sent: %d bytes", sent);
+  //  gdbg->DEBUG(dbg);
 }
 
 void SerialComponent::done_with_message() {
@@ -47,9 +47,9 @@ void SerialComponent::done_with_message() {
 }
 
 bool SerialComponent::check_for_message() {
-  char dbg[32];
-  snprintf(dbg,32,"chk_4_msg() - %s", have_message() ? "HAVE" : "NONE");
-  gdbg->DEBUG(dbg);
+  //  char dbg[32];
+  //  snprintf(dbg,32,"chk_4_msg() - %s", have_message() ? "HAVE" : "NONE");
+  //  gdbg->DEBUG(dbg);
   if (!have_message()) {
     int count = _serial->available();
     while(count > 0) {

@@ -87,9 +87,6 @@ void setup() {
   
   LcdSerial.begin(BASE_LID_BAUD);
   Lcd.initialize(&LcdSerial);
-  Serial.println("Pretest");
-  Lcd.TEST();
-  //Lcd.become_master();
 
   pinMode(GO_BUTTON, INPUT);
 
@@ -106,7 +103,7 @@ void setup() {
   g_go_button->setup();
  
   g_stateMachine->setup();
-  
+  Serial.println("let's go");
   //gdbg->DEBUG("let's go");
   
 }

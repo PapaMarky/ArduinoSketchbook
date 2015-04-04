@@ -8,7 +8,7 @@
 #include "LaserAssembly.h"
 
 void StatePowerUp::OnEnter() {
-  //  Serial.println("StatePowerUp::OnEnter()");
+  Serial.println("StatePowerUp::OnEnter()");
   _start = millis();
   _lcd_connected = false;
   lcd_start_wait = _start;
@@ -23,15 +23,18 @@ bool StatePowerUp::checkLaserState(uint32_t now) {
 
   if (! _laser_seen && g_laser->isVisible()) {
     _laser_seen = true;
+    Serial.println("Laser Seen");
     _laser_aquired_time = now;
   }
 
   if (_laser_seen) {
     if (g_laser->isVisible() && (now - _laser_aquired_time) >= LASER_READY_TIME) {
       _laser_ready = true;
+      Serial.println("Laser Ready");
       return true;
     }
     if (!g_laser->isVisible()) {
+      Serial.println("Laser Lost");
       _laser_seen = false;
     }
   }
@@ -54,7 +57,9 @@ void StatePowerUp::loop(uint32_t now) {
 	was_seen = true;
       }
     } else if (now - last_hello > hello_wait) {
+      Serial.println("Say Hello");
       g_lcd->send_message(SerialComponent::msg_base_hello);
+      last_hello = now;
     }
   }
 
@@ -63,6 +68,7 @@ void StatePowerUp::loop(uint32_t now) {
     g_lcd->send_message(SerialComponent::msg_laser_ready);
   }
   else if (_lcd_connected && _laser_seen && ! was_seen) {
+    Serial.println("msg: laser_seen");
     g_lcd->send_message(SerialComponent::msg_laser_seen);
     was_seen = true;
   }

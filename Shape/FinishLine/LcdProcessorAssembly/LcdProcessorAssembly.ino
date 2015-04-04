@@ -11,7 +11,7 @@
 /**
  * LcdProcessorAssembly - the processor stuck to the LCD in the lid
  *
- * 
+ *
  */
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
@@ -25,33 +25,33 @@
 #include "Controller.h"
 #include "BaseComponent.h"
 
- /* 
-  * Pin List - LID
-  *
-  * A0      - 5ws - up
-  * A1      - 5ws - down
-  * A2      - 5ws - left
-  * A3      - 5ws - right
-  * A4(SDA) - 5ws - select
-  * A5(SCL) - LCD_RS
-  * 
-  * D0(RX)  - BaseTx
-  * D1(TX)  - BaseRx
-  * D2      - diskTx (RX on this side)
-  * D3 *    - RedLED
-  * D4      - diskRx (TX on this side)
-  *
-  * D5 *    - GreenLED
-  * D6 *    - GoButtonLED
-  * D7      - LCD_EN
-  * D8      - LCD_DB4
-  *
-  * D9 *    - YellowLED
-  * D10*    - LCD_DB5
-  * D11*    - LCD_DB6
-  * D12     - LCD_DB7
-  * D13     - diskReset (GRN)
-  */
+/*
+ * Pin List - LID
+ *
+ * A0      - 5ws - up
+ * A1      - 5ws - down
+ * A2      - 5ws - left
+ * A3      - 5ws - right
+ * A4(SDA) - 5ws - select
+ * A5(SCL) - LCD_RS
+ *
+ * D0(RX)  - BaseTx
+ * D1(TX)  - BaseRx
+ * D2      - diskTx (RX on this side)
+ * D3 *    - RedLED
+ * D4      - diskRx (TX on this side)
+ *
+ * D5 *    - GreenLED
+ * D6 *    - GoButtonLED
+ * D7      - LCD_EN
+ * D8      - LCD_DB4
+ *
+ * D9 *    - YellowLED
+ * D10*    - LCD_DB5
+ * D11*    - LCD_DB6
+ * D12     - LCD_DB7
+ * D13     - diskReset (GRN)
+ */
 
 #define LCD_RS A5
 #define LCD_EN 7
@@ -64,14 +64,23 @@ Controller g_controller;
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_DB4, LCD_DB5, LCD_DB6, LCD_DB7);
 
-debug_lcd DEBUGGER;
+//debug_lcd DEBUGGER;
 
 StartupScreen startup_screen(&lcd);
 StartupScreen* g_startup_screen = 0;
+
 ReadyScreen ready_screen(&lcd);
 ReadyScreen* g_ready_screen = 0;
+
 CountdownScreen countdown_screen(&lcd);
 CountdownScreen* g_countdown_screen = 0;
+
+FoulScreen foul_screen(&lcd);
+FoulScreen* g_foul_screen = 0;
+
+TimingScreen timing_screen(&lcd);
+TimingScreen* g_timing_screen = 0;
+
 
 #define DISK_RESET 13
 #define DISK_TX 2
@@ -90,10 +99,6 @@ CountdownScreen* g_countdown_screen = 0;
 #define GREEN_LED_PIN     5
 #define GO_BUTTON_LED_PIN 6
 
-const int MSG_BUFFER_SIZE = 64;
-char buffer[MSG_BUFFER_SIZE];
-
-uint32_t base_wait = 0;
 #include "button_id.h"
 
 ButtonComponent select_button(SW5_SELECT_PIN, SELECT_BUTTON, &g_controller);
@@ -114,12 +119,16 @@ void setup()
   g_startup_screen = &startup_screen;
   g_ready_screen = &ready_screen;
   g_countdown_screen = &countdown_screen;
-  gdbg = &DEBUGGER;
-  lcd.begin(20,4);
-  delay(1000);
-  GeneralScreen::load_shape_logo(&lcd);
-  delay(1000);
-  lcd.clear();
+  g_foul_screen = &foul_screen;
+  g_timing_screen = &timing_screen;
+
+  //gdbg = &DEBUGGER;
+  lcd.begin(20, 4);
+  // GeneralScreen::load_shape_logo(&lcd);
+  //lcd.clear();
+  lcd.home();
+  //lcd.print("hello");
+  //delay(1000);
 
   Serial.begin(BASE_LID_BAUD);
 
@@ -142,6 +151,9 @@ void setup()
 
   g_controller.setScreen(g_startup_screen);
 
+  //lcd.setCursor(0, 3);
+  //lcd.print("setup complete");
+  //delay(1000);
   //database.begin();
   //database.start_command_mode();
 }
@@ -152,4 +164,4 @@ void loop()
   g_controller.loop(now);
 }
 
- 
+
