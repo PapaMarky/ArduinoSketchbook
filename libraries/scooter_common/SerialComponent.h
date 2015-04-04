@@ -42,6 +42,7 @@ class SerialComponent : public Component {
     msg_count_1     = 15,
     msg_go          = 16,
     msg_jump_start  = 17,
+    msg_foul_done   = 18,
   };
 
   void TEST();

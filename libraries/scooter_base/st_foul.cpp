@@ -11,6 +11,7 @@ void StateFoul::OnEnter() {
 }
 
 void StateFoul::OnGoButton() {
+  g_lcd->send_message(SerialComponent::msg_foul_done);
   g_stateMachine->set_state(&g_stReady);
 }
 

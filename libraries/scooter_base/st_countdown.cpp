@@ -20,6 +20,7 @@ void StateCountdown::OnExit() {
 void StateCountdown::loop(uint32_t now) {
 
   if (g_laser->isVisible()) {
+    g_lcd->send_message(SerialComponent::msg_jump_start);
     g_stateMachine->set_state(&g_stFoul);
     return;
   }

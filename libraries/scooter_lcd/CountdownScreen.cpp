@@ -65,7 +65,7 @@ bool CountdownScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   _lcd->setCursor((_n - 1) * 4 + _ndots, 2);
   while(_ndots < 4) {
     _ndots++;
-    _lcd->print("X"); // use X to test if this ever happens
+    _lcd->print(".");
   }
   int pos = _n * 4;
   _ndots = 0;

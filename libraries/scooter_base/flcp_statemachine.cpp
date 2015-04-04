@@ -29,6 +29,7 @@ void StateMachine::set_state(State* state) {
   char b[32];
   snprintf(b,32,"set_state(%p)",state);
   Serial.println(b);
+  Serial.println(state->name());
   if (_state != 0) {
     _state->OnExit();
   }

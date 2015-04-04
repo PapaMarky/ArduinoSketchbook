@@ -20,6 +20,7 @@ class State {
   virtual void OnExit() {}
   virtual void OnGoButton() {}
   virtual void loop(uint32_t now) {}
+  virtual const char* name() {return "state";}
 
  protected:
 };
@@ -33,6 +34,7 @@ class StatePowerUp : public State {
   void OnEnter();
   void OnExit();
   void loop(uint32_t now);
+  const char* name() {return "pwrup";}
 
   private:
   bool checkLaserState(uint32_t now);
@@ -55,6 +57,7 @@ class StateReady : public State {
   void OnExit();
   void loop(uint32_t now);
   void OnGoButton();
+  const char* name() {return "ready";}
 
  private:
   bool _laser_on;
@@ -67,6 +70,7 @@ class StateCountdown : public State {
   void OnEnter();
   void OnExit();
   void loop(uint32_t now);
+  const char* name() {return "cntdn";}
 
  private:
   int _count;
@@ -80,6 +84,7 @@ class StateTiming : public State {
   void OnEnter();
   void OnExit();
   void loop(uint32_t now);
+  const char* name() {return "timing";}
 
 };
 
@@ -90,6 +95,7 @@ class StateResults : public State {
   void OnEnter();
   void OnExit();
   void loop(uint32_t now);
+  const char* name() {return "results";}
 
 };
 
@@ -99,6 +105,7 @@ class StateFoul : public State {
   void OnEnter();
   void OnGoButton();
   void loop(uint32_t now);
+  const char* name() {return "foul";}
  private:
   uint32_t _start_time;
 };
