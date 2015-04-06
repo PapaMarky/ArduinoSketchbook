@@ -5,19 +5,21 @@
 #include "SerialComponent.h"
 
 void ReadyScreen::onLaserOn() {
-  set_line(2, s(S_MOVE_UP));
-  set_line(3, " ");
+  set_line(1, s(S_MOVE_UP));
+  set_line(2, " ");
   go_button_led.off();
 }
 
 void ReadyScreen::onLaserOff() {
-  set_line(2, s(S_PRESS_GO));
-  set_line(3, s(S_START_COUNT));
+  set_line(1, s(S_PRESS_GO));
+  set_line(2, s(S_START_COUNT));
   go_button_led.on();
 }
 
 void ReadyScreen::onEnter() {
   set_line(1, s(S_RUMBLE));
+  set_line(2, s(S_BLANK));
+  set_line(3, s(S_BLANK));
   onLaserOn();
   red_led.off();
   yellow_led.off();

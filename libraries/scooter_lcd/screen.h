@@ -110,9 +110,10 @@ class TimingScreen : public GeneralScreen {
   virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
   virtual void update(uint32_t now);
 
-  void elapsedToString(uint32_t elapsed, char* buffer);
+  static void elapsedToString(uint32_t elapsed, char* buffer);
 
  private:
+  void showSpinner(uint32_t elapsed);
   uint32_t _start;
 };
 extern TimingScreen* g_timing_screen;

@@ -15,6 +15,10 @@ void CountdownScreen::update(uint32_t now) {
 }
 
 void CountdownScreen::onEnter() {
+  _lcd->setCursor(0, 1);
+  char buffer[21];
+  TimingScreen::elapsedToString(0, buffer);
+  _lcd->print(buffer);
   _lcd->setCursor(0, 2);
   _lcd->print(s(S_BLANK));
   _lcd->setCursor(0, 3);
@@ -52,8 +56,8 @@ bool CountdownScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
     n = "1";
     break;
   case SerialComponent::msg_go:
-    // move to timing screen
-    set_line(3, s(S_GO));
+    g_controller.setScreen(g_timing_screen);
+    set_line(2, s(S_GO));
     return true;
   case SerialComponent::msg_jump_start:
     g_controller.onFoul(s(S_FALSE_START));

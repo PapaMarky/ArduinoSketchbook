@@ -1,6 +1,7 @@
 // Copyright 2015, Mark Dyer
 #include <LiquidCrystal.h>
 
+#include "strings.h"
 #include "screen.h"
 
 #include "SerialComponent.h"
@@ -33,10 +34,48 @@ void TimingScreen::elapsedToString(uint32_t elapsed, char* buffer) {
   snprintf(buffer, 21, "    %02d:%02d:%02d.%03d    ", hours, minutes, seconds, fraction);
 }
 
+static uint32_t xpos = -1;
+void TimingScreen::showSpinner(uint32_t elapsed) {
+  uint32_t pos = (elapsed % 5000L)/250;
+  if (xpos == pos)
+    return;
+  xpos = pos;
+  uint32_t x = 0;
+  _lcd->setCursor(0,2);
+  //  _lcd->print(pos);
+  //  _lcd->print("     ");
+
+  while (x < pos) {
+    _lcd->print(" ");
+    x++;
+  }
+  if (x < 20) {
+    _lcd->print("o");
+    x++;
+  }
+  if (x < 20) {
+    _lcd->print("_");
+    x++;
+  }
+  if (x < 20) {
+    _lcd->print("o");
+    x++;
+  }
+  while (x < 21) {
+    _lcd->print(" ");
+    x++;
+  }
+}
+
 void TimingScreen::update(uint32_t now) {
   char buffer[22];
-  elapsedToString(now - _start, buffer);
+  uint32_t elapsed = now - _start;
+  elapsedToString(elapsed, buffer);
+  _lcd->setCursor(0,1);
   _lcd->print(buffer);
+  if (elapsed > 1000) {
+    showSpinner(elapsed);
+  }
 }
 
 void TimingScreen::onEnter() {
