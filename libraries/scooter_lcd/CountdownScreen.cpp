@@ -28,6 +28,10 @@ void CountdownScreen::onEnter() {
   _n = 0;
   _ndots = 0;
   _dot_start = millis();
+  red_led.on();
+  yellow_led.off();
+  green_led.off();
+  go_button_led.off();
 }
 
 int NUM = 0;
@@ -42,22 +46,30 @@ bool CountdownScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
   case SerialComponent::msg_count_4:
     _n = 1;
     n = "4";
+    red_led.setFadeDown(255, 950);
+    yellow_led.setFadeDown(255, 950);
     break;
   case SerialComponent::msg_count_3:
     _n = 2;
+    red_led.setFadeDown(255, 950);
+    yellow_led.setFadeDown(255, 950);
     n = "3";
     break;
   case SerialComponent::msg_count_2:
     _n = 3;
     n = "2";
+    yellow_led.setFadeDown(255, 950);
     break;
   case SerialComponent::msg_count_1:
     _n = 4;
     n = "1";
+    yellow_led.on();
     break;
   case SerialComponent::msg_go:
     g_controller.setScreen(g_timing_screen);
     set_line(2, s(S_GO));
+    yellow_led.off();
+    green_led.on();
     return true;
   case SerialComponent::msg_jump_start:
     g_controller.onFoul(s(S_FALSE_START));

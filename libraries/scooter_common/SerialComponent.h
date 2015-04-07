@@ -43,6 +43,8 @@ class SerialComponent : public Component {
     msg_go          = 16,
     msg_jump_start  = 17,
     msg_foul_done   = 18,
+    msg_finish      = 19,
+    msg_results_done= 20,
   };
 
   void TEST();

@@ -100,6 +100,7 @@ class FoulScreen : public GeneralScreen {
  private:
   char _msg[21];
   uint32_t _blink_start;
+  bool _red_on;
 };
 extern FoulScreen* g_foul_screen;
 
@@ -115,6 +116,7 @@ class TimingScreen : public GeneralScreen {
  private:
   void showSpinner(uint32_t elapsed);
   uint32_t _start;
+  bool _go_showing;
 };
 extern TimingScreen* g_timing_screen;
 
@@ -123,7 +125,12 @@ class ResultsScreen : public GeneralScreen {
  ResultsScreen(LiquidCrystal* lcd) : GeneralScreen(lcd) {}
   virtual void onEnter();
   virtual bool onMessage(uint16_t cmd, uint8_t len, byte* buffer);
+  virtual void update(uint32_t now);
+  void setElapsedTime(uint32_t elapsed);
+ private:
+  char buffer[21];
 };
+extern ResultsScreen* g_results_screen;
 
 #define CONSOLE_LINES 3
 class ConsoleScreen : public Screen {

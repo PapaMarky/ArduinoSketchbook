@@ -16,6 +16,10 @@ void FoulScreen::set_message(char* msg) {
 
 const uint32_t BLINK_LENGTH = 500;
 void FoulScreen::onEnter() {
+  _red_on = true;
+  red_led.on();
+  yellow_led.off();
+  green_led.off();
   _blink_start = millis();
   go_button_led.setFadeDown(255, BLINK_LENGTH);
   char* blank = s(S_BLANK);
@@ -32,6 +36,14 @@ void FoulScreen::update(uint32_t now) {
   if (now - _blink_start > BLINK_LENGTH) {
     _blink_start = now;
     go_button_led.setFadeDown(255, BLINK_LENGTH);
+    if (_red_on) {
+      red_led.off();
+      yellow_led.on();
+    } else {
+      red_led.on();
+      yellow_led.off();
+    }
+    _red_on = !_red_on;
   }
 }
 

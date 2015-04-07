@@ -36,12 +36,12 @@ void TimingScreen::elapsedToString(uint32_t elapsed, char* buffer) {
 
 static uint32_t xpos = -1;
 void TimingScreen::showSpinner(uint32_t elapsed) {
-  uint32_t pos = (elapsed % 5000L)/250;
+  uint32_t pos = (elapsed % 10000L)/500;
   if (xpos == pos)
     return;
   xpos = pos;
   uint32_t x = 0;
-  _lcd->setCursor(0,2);
+  _lcd->setCursor(0,3);
   //  _lcd->print(pos);
   //  _lcd->print("     ");
 
@@ -50,15 +50,15 @@ void TimingScreen::showSpinner(uint32_t elapsed) {
     x++;
   }
   if (x < 20) {
-    _lcd->print("o");
+    _lcd->print("\xA1");
     x++;
   }
   if (x < 20) {
-    _lcd->print("_");
+    _lcd->print("\xD5");
     x++;
   }
   if (x < 20) {
-    _lcd->print("o");
+    _lcd->print("\xA1");
     x++;
   }
   while (x < 21) {
@@ -75,6 +75,11 @@ void TimingScreen::update(uint32_t now) {
   _lcd->print(buffer);
   if (elapsed > 1000) {
     showSpinner(elapsed);
+    if (_go_showing) {
+      _go_showing = false;
+      _lcd->setCursor(0,2);
+      _lcd->print(s(S_BLANK));
+    }
   }
 }
 
@@ -84,8 +89,17 @@ void TimingScreen::onEnter() {
   char buffer[22];
   elapsedToString(0, buffer);
   _lcd->print(buffer);
+  _go_showing = true;
 }
 
 bool TimingScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
+  uint32_t elapsed;
+  switch(cmd) {
+  case SerialComponent::msg_finish:
+    sscanf((char*)buffer, "%lu", &elapsed);
+    g_controller.setScreen(g_results_screen);
+    return true;
+  }
+  return false;
 }
 

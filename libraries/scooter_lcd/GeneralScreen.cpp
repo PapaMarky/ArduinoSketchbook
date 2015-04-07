@@ -92,9 +92,11 @@ void GeneralScreen::update(uint32_t now) {
   if (now - _logo_rotate_start > LOGO_ROTATE_TIME) {
     _logo_rotate_start = now;
     _showing_logo = !_showing_logo;
-    if (_showing_logo)
-      display_shape_logo();
-    else {
+    if (_showing_logo) {
+      //display_shape_logo();
+      _lcd->setCursor(0, 0);
+      _lcd->print(s(S_SCOOTERBOT));
+    } else {
       _lcd->setCursor(0, 0);
       _lcd->print(s(S_SCOOTERBOT));
     }

@@ -29,18 +29,18 @@ bool StartupScreen::onMessage(uint16_t cmd, uint8_t len, byte* buffer) {
 
   case SerialComponent::msg_laser_seen:
     yellow_led.on();
-    set_line(1, "Laser Detected");
+    set_line(1, "   Laser Detected   ");
     return true;
 
   case SerialComponent::msg_laser_ready:
     green_led.on();
-    set_line(1, "Laser Ready");
+    set_line(1, "   Laser Ready      ");
     delay(1000);
     return true;
 
   case SerialComponent::msg_base_ready:
-    set_line(1, "Next Screen...");
-    delay(2000);
+    //    set_line(1, "Next Screen...");
+    delay(500);
     g_controller.setScreen(g_ready_screen);
     return true;
   }

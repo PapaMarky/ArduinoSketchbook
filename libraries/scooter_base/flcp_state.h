@@ -39,7 +39,7 @@ class StatePowerUp : public State {
   private:
   bool checkLaserState(uint32_t now);
 
-  unsigned long _start;
+  uint32_t _start;
   bool _lcd_connected;
   bool _lcd_ready;
   uint32_t lcd_start_wait;
@@ -85,7 +85,8 @@ class StateTiming : public State {
   void OnExit();
   void loop(uint32_t now);
   const char* name() {return "timing";}
-
+  uint32_t _start_time;
+  bool _has_left;
 };
 
 class StateResults : public State {
@@ -95,6 +96,7 @@ class StateResults : public State {
   void OnEnter();
   void OnExit();
   void loop(uint32_t now);
+  void OnGoButton();
   const char* name() {return "results";}
 
 };

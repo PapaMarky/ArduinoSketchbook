@@ -21,7 +21,7 @@ void ReadyScreen::onEnter() {
   set_line(2, s(S_BLANK));
   set_line(3, s(S_BLANK));
   onLaserOn();
-  red_led.off();
+  red_led.on();
   yellow_led.off();
   green_led.off();
   go_button_led.off();

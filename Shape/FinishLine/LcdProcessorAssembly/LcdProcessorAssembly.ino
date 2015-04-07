@@ -81,6 +81,9 @@ FoulScreen* g_foul_screen = 0;
 TimingScreen timing_screen(&lcd);
 TimingScreen* g_timing_screen = 0;
 
+ResultsScreen results_screen(&lcd);
+ResultsScreen* g_results_screen = 0;
+
 
 #define DISK_RESET 13
 #define DISK_TX 2
@@ -121,6 +124,7 @@ void setup()
   g_countdown_screen = &countdown_screen;
   g_foul_screen = &foul_screen;
   g_timing_screen = &timing_screen;
+  g_results_screen = &results_screen;
 
   //gdbg = &DEBUGGER;
   lcd.begin(20, 4);

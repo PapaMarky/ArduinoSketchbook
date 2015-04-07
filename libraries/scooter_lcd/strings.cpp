@@ -11,12 +11,12 @@ const char blank[]       PROGMEM = "                    "; // 1
 const char go[]          PROGMEM = "        GO!!        "; // 2
 const char false_start[] PROGMEM = "    FALSE START!!   "; // 3
 const char scooter_bot[] PROGMEM = "   ScooterBot 1.0   "; // 4
-const char connecting[]  PROGMEM = "Connecting...       "; // 5
+const char connecting[]  PROGMEM = "    Connecting...   "; // 5
 const char shape[]       PROGMEM = "Shape Security, Inc."; // 6
 const char moveup[]      PROGMEM = "Move Up to the Line "; // 7
 const char pressgo[]     PROGMEM = "Press Go Button to  "; // 8
-const char startcount[]  PROGMEM = "Start Countdown     "; // 9
-const char rumble[]      PROGMEM = "Ready to Rumble     "; // 10
+const char startcount[]  PROGMEM = "  Start Countdown   "; // 9
+const char rumble[]      PROGMEM = "  Ready to Rumble   "; // 10
 
 const char* const string_table[] PROGMEM =
   {
